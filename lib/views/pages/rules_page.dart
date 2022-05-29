@@ -212,6 +212,8 @@ class _RulesPageState extends State<RulesPage> {
                                               top: 10.0,
                                             ),
                                             title: TextField(
+                                              keyboardAppearance:
+                                                  Brightness.dark,
                                               style: buttonInfo,
                                               controller: _ruleTitle,
                                               decoration: const InputDecoration(
@@ -224,6 +226,8 @@ class _RulesPageState extends State<RulesPage> {
                                                   width: size.width * 0.8,
                                                   height: size.height * 0.6,
                                                   child: TextField(
+                                                    keyboardAppearance:
+                                                        Brightness.dark,
                                                     style: generalText,
                                                     controller: _ruleBody,
                                                     expands: true,
@@ -235,11 +239,10 @@ class _RulesPageState extends State<RulesPage> {
                                                   ),
                                                 ),
                                                 Positioned(
-                                                  // TODO: Add style for Save Button
                                                   bottom: 10,
                                                   right: 10,
                                                   child: ElevatedButton(
-                                                    style: fancyGreyButton,
+                                                    style: redButton,
                                                     onPressed: () {
                                                       Navigator.of(context)
                                                           .pop();
@@ -345,6 +348,7 @@ class _RulesPageState extends State<RulesPage> {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
+                            backgroundColor: kBlackColor,
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(
@@ -356,9 +360,13 @@ class _RulesPageState extends State<RulesPage> {
                               top: 10.0,
                             ),
                             title: TextField(
-                              style: buttonInfo,
+                              style: smallerHeading,
+                              keyboardAppearance: Brightness.dark,
                               controller: _ruleTitle,
                               decoration: const InputDecoration(
+                                hintStyle: hintText,
+                                filled: true,
+                                fillColor: kBlackColor,
                                 border: InputBorder.none,
                                 hintText: textRulesSectionTemp,
                               ),
@@ -370,20 +378,24 @@ class _RulesPageState extends State<RulesPage> {
                                   height: size.height * 0.6,
                                   child: TextField(
                                     style: generalText,
+                                    keyboardAppearance: Brightness.dark,
                                     controller: _ruleBody,
                                     expands: true,
                                     maxLines: null,
                                     decoration: const InputDecoration(
+                                      hintStyle: hintText,
+                                      filled: true,
+                                      fillColor: kBlackColor,
                                       border: InputBorder.none,
                                       hintText: textRulesBodyTemp,
                                     ),
                                   ),
                                 ),
                                 Positioned(
-                                  // TODO: Add style for Save Button
                                   bottom: 10,
                                   right: 10,
                                   child: ElevatedButton(
+                                    style: redButton,
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                       rulesRef.child('${rules.length}').update({

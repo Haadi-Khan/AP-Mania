@@ -45,7 +45,7 @@ const statusBarColorScroll = SystemUiOverlayStyle(
 // General Formatting
 const heading = TextStyle(
     color: kWhiteColor, fontWeight: FontWeight.bold, fontSize: 30, height: 1.5);
-const mainAppTitlePage = TextStyle(
+const smallerHeading = TextStyle(
     color: kWhiteColor, fontWeight: FontWeight.bold, fontSize: 20, height: 1.5);
 
 const buttonInfo =
@@ -71,12 +71,12 @@ final underlinedButton = ButtonStyle(
     foregroundColor: MaterialStateProperty.all<Color>(kWhiteColor),
     backgroundColor: MaterialStateProperty.all<Color>(kBlackColor),
     side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
-final fancyGreyButton = ButtonStyle(
+final redButton = ButtonStyle(
     shape: MaterialStateProperty.all<OutlinedBorder>(
         const BeveledRectangleBorder()),
     padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
-    foregroundColor: MaterialStateProperty.all<Color>(kWhiteColor),
-    backgroundColor: MaterialStateProperty.all<Color>(kBlueColor),
+    foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
+    backgroundColor: MaterialStateProperty.all<Color>(kRedColor),
     side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
 
 // Popup Formatting

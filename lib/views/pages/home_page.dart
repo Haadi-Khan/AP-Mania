@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   late final StreamSubscription _testSubscription;
   bool adminMode = false;
   late DatabaseReference datesRef;
+  late DataSnapshot userSnapshot;
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    DateTime now = DateTime.now();
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: statusBarColorScroll,
       child: adminMode
@@ -48,9 +50,92 @@ class _HomePageState extends State<HomePage> {
                 ListView.builder(
                   itemCount: dates.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return SizedBox(
-                      height: size.height * 0.03,
-                      child: Text(dates[index].child('time').value as String),
+                    return Stack(
+                      children: [
+                        SizedBox(
+                          height: size.height * 0.03,
+                          child: Text(
+                            DateTime.parse(
+                                    dates[index].child('time').value as String)
+                                .toLocal()
+                                .toIso8601String()
+                                .replaceAll('T', ' '),
+                            style: buttonInfo,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 5,
+                          right: 10,
+                          child: Row(
+                            children: [
+                              CupertinoButton(
+                                minSize: double.minPositive,
+                                padding: const EdgeInsets.all(5),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.pen,
+                                  size: 15,
+                                  color: kWhiteColor,
+                                ),
+                                onPressed: () async {
+                                  final datePicked = await showDatePicker(
+                                    context: context,
+                                    initialDate: now,
+                                    firstDate: now,
+                                    lastDate: DateTime(
+                                      now.year + 1,
+                                      now.month,
+                                      now.day,
+                                    ),
+                                  );
+                                  if (datePicked != null) {
+                                    final timePicked = await showTimePicker(
+                                      context: context,
+                                      initialTime:
+                                          const TimeOfDay(hour: 00, minute: 00),
+                                    );
+                                    if (timePicked != null) {
+                                      DateTime newTime = DateTime(
+                                              datePicked.year,
+                                              datePicked.month,
+                                              datePicked.day,
+                                              timePicked.hour,
+                                              timePicked.minute)
+                                          .toUtc();
+                                      datesRef.child('$index').update({
+                                        'time': newTime.toIso8601String(),
+                                        'started': false
+                                      });
+                                    }
+                                  }
+                                },
+                              ),
+                              CupertinoButton(
+                                minSize: double.minPositive,
+                                padding: const EdgeInsets.all(5),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.trash,
+                                  size: 15,
+                                  color: kRedColor,
+                                ),
+                                onPressed: () {
+                                  for (int i = index;
+                                      i < dates.length - 1;
+                                      i++) {
+                                    datesRef.child('$i').set({
+                                      'time': dates[i + 1].child('time').value!,
+                                      'started':
+                                          dates[i + 1].child('started').value!
+                                    });
+                                  }
+                                  datesRef
+                                      .child('${dates.length - 1}')
+                                      .remove();
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
                     );
                   },
                 ),
@@ -67,14 +152,49 @@ class _HomePageState extends State<HomePage> {
                           size: 30,
                           color: kRedColor,
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          final datePicked = await showDatePicker(
+                            context: context,
+                            initialDate: now,
+                            firstDate: now,
+                            lastDate: DateTime(
+                              now.year + 1,
+                              now.month,
+                              now.day,
+                            ),
+                          );
+                          if (datePicked != null) {
+                            final timePicked = await showTimePicker(
+                              context: context,
+                              initialTime:
+                                  const TimeOfDay(hour: 00, minute: 00),
+                            );
+                            if (timePicked != null) {
+                              DateTime newTime = DateTime(
+                                      datePicked.year,
+                                      datePicked.month,
+                                      datePicked.day,
+                                      timePicked.hour,
+                                      timePicked.minute)
+                                  .toUtc();
+                              datesRef.child('${dates.length}').set({
+                                'time': newTime.toIso8601String(),
+                                'started': false
+                              });
+                            }
+                          }
+                        },
                       ),
                     ],
                   ),
                 ),
               ],
             )
-          : const SizedBox(),
+          : Column(
+              children: [
+                SizedBox(height: size.height * 0.5),
+              ],
+            ),
     );
   }
 
@@ -84,10 +204,11 @@ class _HomePageState extends State<HomePage> {
         await FirebaseDatabase.instance.ref('users/$id/game').once();
     final game = gameSnapshot.snapshot.value;
 
-    final adminSnapshot =
+    final userEvent =
         await FirebaseDatabase.instance.ref('games/$game/users/$id').once();
-    final admin = adminSnapshot.snapshot.child('admin').value as bool;
-    final verified = adminSnapshot.snapshot.child('verified').value as bool;
+    userSnapshot = userEvent.snapshot;
+    final admin = userSnapshot.child('admin').value as bool;
+    final verified = userSnapshot.child('verified').value as bool;
     adminMode = admin && verified;
 
     datesRef = FirebaseDatabase.instance.ref('games/$game/rounds');
@@ -109,28 +230,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 }
-// class HomePage extends StatelessWidget {
-//   const HomePage({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return RichText(
-//       text: TextSpan(
-//         style: DefaultTextStyle.of(context).style,
-//         children: const [
-//           TextSpan(text: "Welcome to AP Assassin!", style: heading),
-//           TextSpan(
-//               text: "Make sure to pay admission dues!\n\n", style: homeBlurb),
-//           TextSpan(
-//               text: "Make sure to read the rules in the app\n\n",
-//               style: homeBlurb),
-//           TextSpan(
-//               text: "Good luck, and remember to be safe!", style: homeBlurb)
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 Future<bool> showLogoutDialog(BuildContext context) {
   return showDialog<bool>(
@@ -161,7 +260,7 @@ Future<bool> showLogoutDialog(BuildContext context) {
 
 AppBar homeBar(BuildContext context, State state) {
   return AppBar(
-    title: const Text('Welcome to AP Assassin!', style: mainAppTitlePage),
+    title: const Text('Welcome to AP Assassin!', style: smallerHeading),
     backgroundColor: kBlackColor,
     actions: [
       PopupMenuButton<MenuAction>(

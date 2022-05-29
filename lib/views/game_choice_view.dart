@@ -172,7 +172,7 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                                   isNewGame = true;
                                 });
                               },
-                              style: fancyGreyButton,
+                              style: redButton,
                               child: const Text(textCreateGame),
                             ),
                           ),

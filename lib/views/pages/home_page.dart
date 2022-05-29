@@ -10,11 +10,21 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return RichText(
+        text: TextSpan(
+      style: DefaultTextStyle.of(context).style,
       children: const [
-        Text('Home Page'),
+        TextSpan(text: "Welcome to AP Assassin!", style: myBoldStyle),
+        TextSpan(
+            text: "Make sure to pay admission dues!\n\n",
+            style: homeBlurbStyle),
+        TextSpan(
+            text: "Make sure to read the rules in the app\n\n",
+            style: homeBlurbStyle),
+        TextSpan(
+            text: "Good luck, and remember to be safe!", style: homeBlurbStyle)
       ],
-    );
+    ));
   }
 }
 

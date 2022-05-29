@@ -11,7 +11,7 @@ class WelcomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: kWhiteColor,
+      backgroundColor: kBlackColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: statusBarColor,
         child: Center(
@@ -32,9 +32,9 @@ class WelcomeView extends StatelessWidget {
                   },
                   style: ButtonStyle(
                     foregroundColor:
-                        MaterialStateProperty.all<Color>(kWhiteColor),
-                    backgroundColor:
                         MaterialStateProperty.all<Color>(kBlackColor),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(kWhiteColor),
                     side:
                         MaterialStateProperty.all<BorderSide>(BorderSide.none),
                   ),
@@ -60,7 +60,7 @@ class WelcomeView extends StatelessWidget {
                   ),
                   child: const Text(
                     textLogin,
-                    style: TextStyle(color: kBlackColor),
+                    style: TextStyle(color: kWhiteColor),
                   ),
                 ),
               )

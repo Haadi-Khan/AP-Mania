@@ -23,7 +23,7 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kWhiteColor,
+      backgroundColor: kBlackColor,
       appBar: getAppBar(page, context, this),
       body: getPage(page),
       bottomNavigationBar: Container(
@@ -39,6 +39,7 @@ class _MainViewState extends State<MainView> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
+              color: kBlackColor,
               enableFeedback: false,
               onPressed: () {
                 setState(() {
@@ -50,6 +51,7 @@ class _MainViewState extends State<MainView> {
                   : const FaIcon(FontAwesomeIcons.book, color: kGreyColor),
             ),
             IconButton(
+              color: kBlackColor,
               enableFeedback: false,
               onPressed: () {
                 setState(() {
@@ -62,6 +64,7 @@ class _MainViewState extends State<MainView> {
                       color: kGreyColor),
             ),
             IconButton(
+              color: kBlackColor,
               enableFeedback: false,
               onPressed: () {
                 setState(() {
@@ -73,6 +76,7 @@ class _MainViewState extends State<MainView> {
                   : const FaIcon(FontAwesomeIcons.house, color: kGreyColor),
             ),
             IconButton(
+              color: kBlackColor,
               enableFeedback: false,
               onPressed: () {
                 setState(() {
@@ -84,6 +88,7 @@ class _MainViewState extends State<MainView> {
                   : const FaIcon(FontAwesomeIcons.userGroup, color: kGreyColor),
             ),
             IconButton(
+              color: kBlackColor,
               enableFeedback: false,
               onPressed: () {
                 setState(() {

@@ -48,8 +48,10 @@ class _PeoplePageState extends State<PeoplePage> {
           child: Row(
             children: [
               DropdownButton<ShowTypes>(
+                dropdownColor: kBlackColor,
                 value: showType,
                 alignment: Alignment.center,
+                style: buttonInfo,
                 items: const [
                   DropdownMenuItem(
                     value: ShowTypes.alive,
@@ -131,8 +133,10 @@ class _PeoplePageState extends State<PeoplePage> {
               ),
               const Spacer(),
               DropdownButton<SortTypes>(
+                dropdownColor: kBlackColor,
                 value: sortType,
                 alignment: Alignment.center,
+                style: buttonInfo,
                 items: const [
                   DropdownMenuItem(
                     value: SortTypes.aToZ,
@@ -196,6 +200,7 @@ class _PeoplePageState extends State<PeoplePage> {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
+                        backgroundColor: kBlackColor,
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(

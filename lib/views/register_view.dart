@@ -47,7 +47,7 @@ class _RegisterViewState extends State<RegisterView> {
         borderSide: BorderSide(color: kGreyColor, width: 3.0));
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: kWhiteColor,
+      backgroundColor: kBlackColor,
       body: SafeArea(
         child: Center(
           child: Stack(
@@ -60,26 +60,6 @@ class _RegisterViewState extends State<RegisterView> {
                     child:
                         Image.asset('assets/images/thunderbirdCrosshair.png'),
                   ),
-                  // RichText(
-                  //   textAlign: TextAlign.center,
-                  //   text: const TextSpan(
-                  //     children: <TextSpan>[
-                  //       TextSpan(
-                  //         text: textRegisterTitle,
-                  //         style: TextStyle(
-                  //             color: kBlackColor,
-                  //             fontWeight: FontWeight.bold,
-                  //             fontSize: 30),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  // const Text(
-                  //   textRegisterSubtitle,
-                  //   style: TextStyle(
-                  //     color: kDarkGreyColor,
-                  //   ),
-                  // ),
                   SizedBox(
                     height: size.height * 0.05,
                     width: size.width * 0.8,
@@ -90,28 +70,29 @@ class _RegisterViewState extends State<RegisterView> {
                             children: [
                               const FaIcon(FontAwesomeIcons.circleExclamation,
                                   color: kErrorColor),
-                              Text(errorMessage ?? '',
-                                  style: const TextStyle(color: kErrorColor)),
+                              Text(errorMessage ?? '', style: generalText),
                             ],
                           ),
                   ),
                   SizedBox(
                     width: size.width * 0.8,
                     child: TextField(
-                      controller: _email,
-                      decoration: InputDecoration(
-                        hintText: textHintEmail,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 15.0,
-                          horizontal: 10.0,
+                        controller: _email,
+                        decoration: InputDecoration(
+                          hintStyle: hintText,
+                          hintText: textHintEmail,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15.0,
+                            horizontal: 10.0,
+                          ),
+                          enabledBorder: border,
+                          focusedBorder: border,
                         ),
-                        enabledBorder: border,
-                        focusedBorder: border,
-                      ),
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        style: generalText,
+                        keyboardType: TextInputType.emailAddress,
+                        keyboardAppearance: Brightness.dark),
                   ),
                   SizedBox(
                     height: size.height * 0.01,
@@ -120,7 +101,9 @@ class _RegisterViewState extends State<RegisterView> {
                     width: size.width * 0.8,
                     child: TextField(
                       controller: _password,
+                      keyboardAppearance: Brightness.dark,
                       decoration: InputDecoration(
+                        hintStyle: hintText,
                         hintText: textHintPass,
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: 15.0,
@@ -137,16 +120,19 @@ class _RegisterViewState extends State<RegisterView> {
                           icon: isPassObscure
                               ? const FaIcon(
                                   FontAwesomeIcons.eyeSlash,
+                                  color: kWhiteColor,
                                   size: 17,
                                 )
                               : const FaIcon(
                                   FontAwesomeIcons.eye,
+                                  color: kWhiteColor,
                                   size: 17,
                                 ),
                         ),
                       ),
                       obscureText: isPassObscure,
                       autocorrect: false,
+                      style: generalText,
                       enableSuggestions: false,
                     ),
                   ),
@@ -158,6 +144,7 @@ class _RegisterViewState extends State<RegisterView> {
                     child: TextField(
                       controller: _confirmPass,
                       decoration: InputDecoration(
+                        hintStyle: hintText,
                         hintText: textHintConfirm,
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: 15.0,
@@ -174,16 +161,20 @@ class _RegisterViewState extends State<RegisterView> {
                           icon: isPassObscure
                               ? const FaIcon(
                                   FontAwesomeIcons.eyeSlash,
+                                  color: kWhiteColor,
                                   size: 17,
                                 )
                               : const FaIcon(
                                   FontAwesomeIcons.eye,
+                                  color: kWhiteColor,
                                   size: 17,
                                 ),
                         ),
                       ),
                       obscureText: isPassObscure,
                       autocorrect: false,
+                      style: generalText,
+                      keyboardAppearance: Brightness.dark,
                       enableSuggestions: false,
                     ),
                   ),
@@ -245,9 +236,9 @@ class _RegisterViewState extends State<RegisterView> {
                         },
                         style: ButtonStyle(
                             foregroundColor:
-                                MaterialStateProperty.all<Color>(kWhiteColor),
-                            backgroundColor:
                                 MaterialStateProperty.all<Color>(kBlackColor),
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(kWhiteColor),
                             side: MaterialStateProperty.all<BorderSide>(
                                 BorderSide.none)),
                         child: const Text(textSignUp),
@@ -259,16 +250,11 @@ class _RegisterViewState extends State<RegisterView> {
                         children: <TextSpan>[
                           const TextSpan(
                             text: textHaveAcc,
-                            style: TextStyle(
-                              color: kDarkGreyColor,
-                            ),
+                            style: generalText,
                           ),
                           TextSpan(
                             text: textLogin,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: kRedColor,
-                            ),
+                            style: redOptionText,
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 Navigator.of(context).pushNamedAndRemoveUntil(

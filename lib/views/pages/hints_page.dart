@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hse_assassin/constants/constants.dart';
 
 class HintsPage extends StatelessWidget {
   const HintsPage({Key? key}) : super(key: key);
@@ -6,8 +7,17 @@ class HintsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: const [
-        Text('Hints Page'),
+      children: [
+        RichText(
+          text: const TextSpan(
+            children: [
+              TextSpan(
+                text: "Hints Page",
+                style: heading,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

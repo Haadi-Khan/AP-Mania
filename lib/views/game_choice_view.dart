@@ -55,6 +55,7 @@ class _GameChoiceViewState extends State<GameChoiceView> {
     OutlineInputBorder border = const OutlineInputBorder(
         borderSide: BorderSide(color: kGreyColor, width: 3.0));
     return Scaffold(
+      backgroundColor: kBlackColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: statusBarColor,
         child: SafeArea(
@@ -92,7 +93,8 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                           },
                           style: ButtonStyle(
                             backgroundColor: isAdmin == true
-                                ? MaterialStateProperty.all<Color>(kBlueColor)
+                                ? MaterialStateProperty.all<Color>(
+                                    kDarkGreyColor)
                                 : MaterialStateProperty.all<Color>(kGreyColor),
                             side: MaterialStateProperty.all<BorderSide>(
                                 BorderSide.none),
@@ -100,8 +102,9 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
-                              FaIcon(FontAwesomeIcons.userGear),
-                              Text(textAdmin),
+                              FaIcon(FontAwesomeIcons.userGear,
+                                  color: kWhiteColor),
+                              Text(textAdmin, style: generalText),
                             ],
                           ),
                         ),
@@ -117,7 +120,8 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                           },
                           style: ButtonStyle(
                             backgroundColor: isAdmin != null && isAdmin != true
-                                ? MaterialStateProperty.all<Color>(kBlueColor)
+                                ? MaterialStateProperty.all<Color>(
+                                    kDarkGreyColor)
                                 : MaterialStateProperty.all<Color>(kGreyColor),
                             side: MaterialStateProperty.all<BorderSide>(
                                 BorderSide.none),
@@ -125,8 +129,8 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
-                              FaIcon(FontAwesomeIcons.user),
-                              Text(textPlayer),
+                              FaIcon(FontAwesomeIcons.user, color: kWhiteColor),
+                              Text(textPlayer, style: generalText),
                             ],
                           ),
                         ),
@@ -141,13 +145,15 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                         SizedBox(
                           height: size.height * 0.04,
                           child: TextField(
-                            textAlignVertical: TextAlignVertical.center,
-                            controller: _gameSearch,
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.search),
-                              hintText: textSearch,
-                            ),
-                          ),
+                              textAlignVertical: TextAlignVertical.center,
+                              controller: _gameSearch,
+                              style: generalText,
+                              decoration: const InputDecoration(
+                                hintStyle: hintText,
+                                prefixIcon: Icon(Icons.search),
+                                hintText: textSearch,
+                              ),
+                              keyboardAppearance: Brightness.dark),
                         ),
                         SizedBox(
                           height: size.height * 0.12,
@@ -182,19 +188,22 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                                 height: size.height * 0.05,
                                 width: size.width * 0.8,
                                 child: TextField(
-                                  controller: _newGameName,
-                                  textAlignVertical: TextAlignVertical.center,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 10.0,
-                                      horizontal: 10.0,
+                                    controller: _newGameName,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        vertical: 10.0,
+                                        horizontal: 10.0,
+                                      ),
+                                      hintStyle: hintText,
+                                      hintText: textNewGameName,
+                                      enabledBorder: border,
+                                      focusedBorder: border,
                                     ),
-                                    hintText: textNewGameName,
-                                    enabledBorder: border,
-                                    focusedBorder: border,
-                                  ),
-                                  autocorrect: false,
-                                ),
+                                    style: generalText,
+                                    autocorrect: false,
+                                    keyboardAppearance: Brightness.dark),
                               ),
                             ],
                           ),
@@ -263,9 +272,9 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                       },
                       style: ButtonStyle(
                           foregroundColor:
-                              MaterialStateProperty.all<Color>(kWhiteColor),
-                          backgroundColor:
                               MaterialStateProperty.all<Color>(kBlackColor),
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(kWhiteColor),
                           side: MaterialStateProperty.all<BorderSide>(
                               BorderSide.none)),
                       child: gameName != null
@@ -322,7 +331,7 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                 shape: MaterialStateProperty.all<OutlinedBorder>(
                     const BeveledRectangleBorder()),
                 padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
-                foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
+                foregroundColor: MaterialStateProperty.all<Color>(kWhiteColor),
                 backgroundColor: MaterialStateProperty.all<Color>(kGreyColor),
                 side: MaterialStateProperty.all<BorderSide>(BorderSide.none)),
             child: Text(matches[index]),

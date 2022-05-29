@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:hse_assassin/constants/constants.dart';
-import 'dart:developer' as devtools show log;
 
 class RulesPage extends StatefulWidget {
   const RulesPage({Key? key}) : super(key: key);
@@ -38,7 +37,7 @@ class _RulesPageState extends State<RulesPage> {
   @override
   void dispose() {
     _ruleTitle.dispose();
-    _ruleBody.dispose;
+    _ruleBody.dispose();
     _testSubscription.cancel();
     super.dispose();
   }
@@ -117,7 +116,7 @@ class _RulesPageState extends State<RulesPage> {
                                     child: const FaIcon(
                                       FontAwesomeIcons.caretUp,
                                       size: 20,
-                                      color: kBlackColor,
+                                      color: kWhiteColor,
                                     ),
                                     onPressed: () async {
                                       if (index > 0) {
@@ -152,7 +151,7 @@ class _RulesPageState extends State<RulesPage> {
                                     child: const FaIcon(
                                       FontAwesomeIcons.caretDown,
                                       size: 20,
-                                      color: kBlackColor,
+                                      color: kWhiteColor,
                                     ),
                                     onPressed: () async {
                                       if (index < rules.length - 1) {
@@ -187,7 +186,7 @@ class _RulesPageState extends State<RulesPage> {
                                     child: const FaIcon(
                                       FontAwesomeIcons.pen,
                                       size: 20,
-                                      color: kBlackColor,
+                                      color: kWhiteColor,
                                     ),
                                     onPressed: () {
                                       _ruleTitle.text = rules[index]
@@ -200,6 +199,7 @@ class _RulesPageState extends State<RulesPage> {
                                         context: context,
                                         builder: (context) {
                                           return AlertDialog(
+                                            backgroundColor: kBlackColor,
                                             shape: const RoundedRectangleBorder(
                                               borderRadius: BorderRadius.all(
                                                 Radius.circular(
@@ -239,10 +239,10 @@ class _RulesPageState extends State<RulesPage> {
                                                   bottom: 10,
                                                   right: 10,
                                                   child: ElevatedButton(
+                                                    style: fancyGreyButton,
                                                     onPressed: () {
-                                                      FocusManager
-                                                          .instance.primaryFocus
-                                                          ?.unfocus();
+                                                      Navigator.of(context)
+                                                          .pop();
                                                       rulesRef
                                                           .child(
                                                               rules[index].key!)
@@ -270,7 +270,21 @@ class _RulesPageState extends State<RulesPage> {
                                       size: 20,
                                       color: kRedColor,
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      for (int i = index;
+                                          i < rules.length - 1;
+                                          i++) {
+                                        rulesRef.child('$i').set({
+                                          'text':
+                                              rules[i + 1].child('text').value!,
+                                          'title':
+                                              rules[i + 1].child('title').value!
+                                        });
+                                      }
+                                      rulesRef
+                                          .child('${rules.length - 1}')
+                                          .remove();
+                                    },
                                   )
                                 ],
                               ),
@@ -324,7 +338,68 @@ class _RulesPageState extends State<RulesPage> {
                       size: 30,
                       color: kRedColor,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      _ruleTitle.clear();
+                      _ruleBody.clear();
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(
+                                  20.0,
+                                ),
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.only(
+                              top: 10.0,
+                            ),
+                            title: TextField(
+                              style: buttonInfo,
+                              controller: _ruleTitle,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: textRulesSectionTemp,
+                              ),
+                            ),
+                            content: Stack(
+                              children: [
+                                SizedBox(
+                                  width: size.width * 0.8,
+                                  height: size.height * 0.6,
+                                  child: TextField(
+                                    style: generalText,
+                                    controller: _ruleBody,
+                                    expands: true,
+                                    maxLines: null,
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: textRulesBodyTemp,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  // TODO: Add style for Save Button
+                                  bottom: 10,
+                                  right: 10,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      rulesRef.child('${rules.length}').update({
+                                        'title': _ruleTitle.text,
+                                        'text': _ruleBody.text
+                                      });
+                                    },
+                                    child: const Text('SAVE'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
@@ -366,5 +441,5 @@ class _RulesPageState extends State<RulesPage> {
 }
 
 AppBar rulesBar() {
-  return AppBar();
+  return AppBar(backgroundColor: kBlackColor);
 }

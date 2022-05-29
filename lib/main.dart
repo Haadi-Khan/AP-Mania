@@ -22,7 +22,7 @@ void main() {
       child: MaterialApp(
         title: appTitle,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.red,
         ),
         home: const MyApp(),
         routes: {
@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
               ),
-              backgroundColor: kWhiteColor,
+              backgroundColor: kBlackColor,
             );
         }
       },

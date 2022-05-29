@@ -19,8 +19,8 @@ const kCyanColor = Color.fromARGB(255, 1, 132, 188);
 */
 
 // Dark Scheme
-const kWhiteColor = Color(0xff282c34);
-const kBlackColor = Color(0xffabb2bf);
+const kBlackColor = Color(0xff282c34);
+const kWhiteColor = Color(0xffabb2bf);
 const kGreyColor = Color(0xff5c6370);
 const kDarkGreyColor = Color(0xff4b5263);
 const kRedColor = Color(0xffe06c75);
@@ -34,23 +34,29 @@ const kCyanColor = Color(0xff56b6c2);
 
 // Status Bar Formatting
 const statusBarColor = SystemUiOverlayStyle(
-    statusBarColor: kWhiteColor,
+    statusBarColor: kBlackColor,
     statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.light);
 const statusBarColorScroll = SystemUiOverlayStyle(
-    statusBarColor: kWhiteColor,
+    statusBarColor: kBlackColor,
     statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.light);
 
 // General Formatting
 const heading = TextStyle(
-    color: kBlackColor, fontWeight: FontWeight.bold, fontSize: 30, height: 1.5);
+    color: kWhiteColor, fontWeight: FontWeight.bold, fontSize: 30, height: 1.5);
+const mainAppTitlePage = TextStyle(
+    color: kWhiteColor, fontWeight: FontWeight.bold, fontSize: 20, height: 1.5);
 
 const buttonInfo =
-    TextStyle(color: kBlackColor, fontWeight: FontWeight.bold, fontSize: 15);
+    TextStyle(color: kWhiteColor, fontWeight: FontWeight.bold, fontSize: 15);
 
 const generalText =
-    TextStyle(color: kBlackColor, fontWeight: FontWeight.normal, fontSize: 15);
+    TextStyle(color: kWhiteColor, fontWeight: FontWeight.normal, fontSize: 15);
+const hintText =
+    TextStyle(color: kGreyColor, fontWeight: FontWeight.normal, fontSize: 15);
+const redOptionText =
+    TextStyle(color: kRedColor, fontWeight: FontWeight.bold, fontSize: 15);
 
 // Button Styles
 final rectButton = ButtonStyle(
@@ -58,37 +64,37 @@ final rectButton = ButtonStyle(
       const BeveledRectangleBorder(),
     ),
     padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
-    foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
+    foregroundColor: MaterialStateProperty.all<Color>(kWhiteColor),
     backgroundColor: MaterialStateProperty.all<Color>(kGreyColor),
     side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
 final underlinedButton = ButtonStyle(
-    foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
-    backgroundColor: MaterialStateProperty.all<Color>(kWhiteColor),
+    foregroundColor: MaterialStateProperty.all<Color>(kWhiteColor),
+    backgroundColor: MaterialStateProperty.all<Color>(kBlackColor),
     side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
 final fancyGreyButton = ButtonStyle(
     shape: MaterialStateProperty.all<OutlinedBorder>(
         const BeveledRectangleBorder()),
     padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
-    foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
+    foregroundColor: MaterialStateProperty.all<Color>(kWhiteColor),
     backgroundColor: MaterialStateProperty.all<Color>(kBlueColor),
     side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
 
 // Popup Formatting
 const popupTitle = TextStyle(
-    color: kBlackColor, fontWeight: FontWeight.normal, fontSize: 24.0);
+    color: kWhiteColor, fontWeight: FontWeight.normal, fontSize: 24.0);
 const popupText = TextStyle(
-    color: kBlackColor, fontWeight: FontWeight.normal, fontSize: 20.0);
+    color: kWhiteColor, fontWeight: FontWeight.normal, fontSize: 20.0);
 
 // Home Page Formatting
 const homeBlurb = TextStyle(
-    color: kBlackColor,
+    color: kWhiteColor,
     fontWeight: FontWeight.normal,
     fontSize: 18,
     height: 1.2);
 
 // Kill Page Formatting
 const killHeadings = TextStyle(
-    color: kBlackColor, fontWeight: FontWeight.bold, fontSize: 30, height: 1.5);
+    color: kWhiteColor, fontWeight: FontWeight.bold, fontSize: 30, height: 1.5);
 
 // Rules Page Formatting
 

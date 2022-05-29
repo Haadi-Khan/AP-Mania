@@ -49,7 +49,7 @@ class _InfoViewState extends State<InfoView> {
         borderSide: BorderSide(color: kGreyColor, width: 3.0));
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: kWhiteColor,
+      backgroundColor: kBlackColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: statusBarColor,
         child: Column(
@@ -68,9 +68,7 @@ class _InfoViewState extends State<InfoView> {
             ),
             const Text(
               textInfoSubtitle,
-              style: TextStyle(
-                color: kDarkGreyColor,
-              ),
+              style: hintText,
             ),
             SizedBox(
               height: size.height * 0.01,
@@ -78,18 +76,20 @@ class _InfoViewState extends State<InfoView> {
             SizedBox(
               width: size.width * 0.8,
               child: TextField(
-                controller: _fullName,
-                decoration: InputDecoration(
-                  hintText: textHintFullName,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 15.0,
-                    horizontal: 10.0,
+                  controller: _fullName,
+                  decoration: InputDecoration(
+                    hintStyle: hintText,
+                    hintText: textHintFullName,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0,
+                      horizontal: 10.0,
+                    ),
+                    enabledBorder: border,
+                    focusedBorder: border,
                   ),
-                  enabledBorder: border,
-                  focusedBorder: border,
-                ),
-                autocorrect: false,
-              ),
+                  style: generalText,
+                  autocorrect: false,
+                  keyboardAppearance: Brightness.dark),
             ),
             SizedBox(
               height: size.height * 0.01,
@@ -97,19 +97,21 @@ class _InfoViewState extends State<InfoView> {
             SizedBox(
               width: size.width * 0.8,
               child: TextField(
-                controller: _phoneNumber,
-                decoration: InputDecoration(
-                  hintText: textHintPhoneNumber,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 15.0,
-                    horizontal: 10.0,
+                  controller: _phoneNumber,
+                  decoration: InputDecoration(
+                    hintStyle: hintText,
+                    hintText: textHintPhoneNumber,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0,
+                      horizontal: 10.0,
+                    ),
+                    enabledBorder: border,
+                    focusedBorder: border,
                   ),
-                  enabledBorder: border,
-                  focusedBorder: border,
-                ),
-                autocorrect: false,
-                keyboardType: TextInputType.number,
-              ),
+                  autocorrect: false,
+                  style: generalText,
+                  keyboardType: TextInputType.number,
+                  keyboardAppearance: Brightness.dark),
             ),
             SizedBox(
               height: size.height * 0.01,
@@ -120,7 +122,7 @@ class _InfoViewState extends State<InfoView> {
             const Text(
               textInfoPhoto,
               style: TextStyle(
-                color: kDarkGreyColor,
+                color: kGreyColor,
               ),
             ),
             Row(
@@ -147,7 +149,7 @@ class _InfoViewState extends State<InfoView> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
-                        FaIcon(FontAwesomeIcons.images),
+                        FaIcon(FontAwesomeIcons.images, color: kWhiteColor),
                         Text(textChoosePhoto),
                       ],
                     ),
@@ -175,7 +177,7 @@ class _InfoViewState extends State<InfoView> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
-                        FaIcon(FontAwesomeIcons.camera),
+                        FaIcon(FontAwesomeIcons.camera, color: kWhiteColor),
                         Text(textTakePhoto),
                       ],
                     ),
@@ -247,9 +249,9 @@ class _InfoViewState extends State<InfoView> {
                 },
                 style: ButtonStyle(
                     foregroundColor:
-                        MaterialStateProperty.all<Color>(kWhiteColor),
-                    backgroundColor:
                         MaterialStateProperty.all<Color>(kBlackColor),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(kWhiteColor),
                     side:
                         MaterialStateProperty.all<BorderSide>(BorderSide.none)),
                 child: const Text(textSignUp),

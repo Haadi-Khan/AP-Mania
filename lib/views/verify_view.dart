@@ -48,7 +48,7 @@ class _VerifyViewState extends State<VerifyView> {
                         TextSpan(
                           text: textVerification1,
                           style: TextStyle(
-                              color: kBlackColor,
+                              color: kWhiteColor,
                               fontWeight: FontWeight.normal,
                               fontSize: 25),
                         ),
@@ -63,7 +63,7 @@ class _VerifyViewState extends State<VerifyView> {
                         TextSpan(
                           text: textVerification2,
                           style: TextStyle(
-                              color: kBlackColor,
+                              color: kWhiteColor,
                               fontWeight: FontWeight.normal,
                               fontSize: 25),
                         ),
@@ -78,7 +78,7 @@ class _VerifyViewState extends State<VerifyView> {
                         TextSpan(
                           text: textVerification3,
                           style: TextStyle(
-                              color: kBlackColor,
+                              color: kWhiteColor,
                               fontWeight: FontWeight.normal,
                               fontSize: 25),
                         ),

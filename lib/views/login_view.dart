@@ -44,7 +44,7 @@ class _LoginViewState extends State<LoginView> {
         borderSide: BorderSide(color: kGreyColor, width: 3.0));
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: kWhiteColor,
+      backgroundColor: kBlackColor,
       body: SafeArea(
         child: Center(
           child: Stack(
@@ -63,7 +63,7 @@ class _LoginViewState extends State<LoginView> {
                         TextSpan(
                           text: textLoginTitle,
                           style: TextStyle(
-                              color: kBlackColor,
+                              color: kWhiteColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 30),
                         ),
@@ -94,19 +94,20 @@ class _LoginViewState extends State<LoginView> {
                   SizedBox(
                     width: size.width * 0.8,
                     child: TextField(
-                      controller: _email,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 15.0,
-                          horizontal: 10.0,
+                        controller: _email,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15.0,
+                            horizontal: 10.0,
+                          ),
+                          enabledBorder: border,
+                          focusedBorder: border,
                         ),
-                        enabledBorder: border,
-                        focusedBorder: border,
-                      ),
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        style: generalText,
+                        keyboardType: TextInputType.emailAddress,
+                        keyboardAppearance: Brightness.dark),
                   ),
                   SizedBox(
                     height: size.height * 0.01,
@@ -114,35 +115,32 @@ class _LoginViewState extends State<LoginView> {
                   SizedBox(
                     width: size.width * 0.8,
                     child: TextField(
-                      controller: _password,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 15.0,
-                          horizontal: 10.0,
+                        controller: _password,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15.0,
+                            horizontal: 10.0,
+                          ),
+                          enabledBorder: border,
+                          focusedBorder: border,
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                isPassObscure = !isPassObscure;
+                              });
+                            },
+                            icon: isPassObscure
+                                ? const FaIcon(FontAwesomeIcons.eyeSlash,
+                                    size: 17, color: kWhiteColor)
+                                : const FaIcon(FontAwesomeIcons.eye,
+                                    size: 17, color: kWhiteColor),
+                          ),
                         ),
-                        enabledBorder: border,
-                        focusedBorder: border,
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isPassObscure = !isPassObscure;
-                            });
-                          },
-                          icon: isPassObscure
-                              ? const FaIcon(
-                                  FontAwesomeIcons.eyeSlash,
-                                  size: 17,
-                                )
-                              : const FaIcon(
-                                  FontAwesomeIcons.eye,
-                                  size: 17,
-                                ),
-                        ),
-                      ),
-                      obscureText: isPassObscure,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                    ),
+                        obscureText: isPassObscure,
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        keyboardAppearance: Brightness.dark,
+                        style: generalText),
                   ),
                 ],
               ),
@@ -201,9 +199,9 @@ class _LoginViewState extends State<LoginView> {
                         },
                         style: ButtonStyle(
                             foregroundColor:
-                                MaterialStateProperty.all<Color>(kWhiteColor),
-                            backgroundColor:
                                 MaterialStateProperty.all<Color>(kBlackColor),
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(kWhiteColor),
                             side: MaterialStateProperty.all<BorderSide>(
                                 BorderSide.none)),
                         child: const Text(textLogin),
@@ -215,16 +213,11 @@ class _LoginViewState extends State<LoginView> {
                         children: <TextSpan>[
                           const TextSpan(
                             text: textNoAcc,
-                            style: TextStyle(
-                              color: kDarkGreyColor,
-                            ),
+                            style: generalText,
                           ),
                           TextSpan(
                             text: textSignUp,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: kRedColor,
-                            ),
+                            style: redOptionText,
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 Navigator.of(context).pushNamedAndRemoveUntil(

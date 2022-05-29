@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:hse_assassin/constants/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 enum ShowTypes { alive, all, admin }
 
@@ -74,6 +75,7 @@ class _PeoplePageState extends State<PeoplePage> {
                             showPeople.add(person);
                           }
                         }
+
                         break;
                       case ShowTypes.alive:
                         showPeople = [];
@@ -114,11 +116,14 @@ class _PeoplePageState extends State<PeoplePage> {
                         });
                         break;
                       case SortTypes.mostKills:
-                        showPeople.sort((a, b) {
-                          int killsA = a.child('kills').value as int;
-                          int killsB = b.child('kills').value as int;
-                          return killsA - killsB;
-                        });
+                        if (showType != ShowTypes.admin) {
+                          showPeople.sort((a, b) {
+                            int killsA = a.child('kills').value as int;
+                            int killsB = b.child('kills').value as int;
+                            return killsA - killsB;
+                          });
+                        }
+
                         break;
                     }
                   });
@@ -128,31 +133,20 @@ class _PeoplePageState extends State<PeoplePage> {
               DropdownButton<SortTypes>(
                 value: sortType,
                 alignment: Alignment.center,
-                items: showType == ShowTypes.admin
-                    ? const [
-                        DropdownMenuItem(
-                          value: SortTypes.aToZ,
-                          child: Text(textSortAZ),
-                        ),
-                        DropdownMenuItem(
-                          value: SortTypes.zToA,
-                          child: Text(textSortZA),
-                        ),
-                      ]
-                    : const [
-                        DropdownMenuItem(
-                          value: SortTypes.aToZ,
-                          child: Text(textSortAZ),
-                        ),
-                        DropdownMenuItem(
-                          value: SortTypes.zToA,
-                          child: Text(textSortZA),
-                        ),
-                        DropdownMenuItem(
-                          value: SortTypes.mostKills,
-                          child: Text(textSortKills),
-                        ),
-                      ],
+                items: const [
+                  DropdownMenuItem(
+                    value: SortTypes.aToZ,
+                    child: Text(textSortAZ),
+                  ),
+                  DropdownMenuItem(
+                    value: SortTypes.zToA,
+                    child: Text(textSortZA),
+                  ),
+                  DropdownMenuItem(
+                    value: SortTypes.mostKills,
+                    child: Text(textSortKills),
+                  ),
+                ],
                 onChanged: (SortTypes? newValue) {
                   setState(() {
                     sortType = newValue!;
@@ -222,10 +216,18 @@ class _PeoplePageState extends State<PeoplePage> {
                           child: Column(
                             children: [
                               Expanded(
-                                child: Image.network(showPeople[index]
-                                    .child('photo_url')
-                                    .value
-                                    .toString()),
+                                child: CachedNetworkImage(
+                                  imageUrl: showPeople[index]
+                                      .child('photo_url')
+                                      .value as String,
+                                  placeholder: (context, url) => const Center(
+                                    child: SizedBox(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                ),
                               ),
                               showType != ShowTypes.admin
                                   ? Text(
@@ -248,10 +250,12 @@ class _PeoplePageState extends State<PeoplePage> {
                   children: [
                     SizedBox(
                       height: size.height * 0.1,
-                      child: Image.network(showPeople[index]
-                          .child('photo_url')
-                          .value
-                          .toString()),
+                      child: CachedNetworkImage(
+                        imageUrl: showPeople[index].child('photo_url').value
+                            as String,
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                      ),
                     ),
                     Expanded(
                       child: FittedBox(

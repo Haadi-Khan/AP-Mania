@@ -24,6 +24,14 @@ const statusBarColorScroll = SystemUiOverlayStyle(
   statusBarIconBrightness: Brightness.dark,
   statusBarBrightness: Brightness.light,
 );
+const myBoldStyle = TextStyle(
+    color: kBlackColor, fontWeight: FontWeight.bold, fontSize: 30, height: 1.5);
+
+const homeBlurbStyle = TextStyle(
+    color: kBlackColor,
+    fontWeight: FontWeight.normal,
+    fontSize: 18,
+    height: 1.2);
 
 // general text
 const textStart = 'Get Started';

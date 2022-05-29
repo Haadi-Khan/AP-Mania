@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hse_assassin/constants/constants.dart';
 
 class KillsPage extends StatelessWidget {
   const KillsPage({Key? key}) : super(key: key);
@@ -6,8 +7,10 @@ class KillsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: const [
-        Text('Kills Page'),
+      children: [
+        RichText(
+          text: const TextSpan(text: 'Kill Page', style: myBoldStyle),
+        ),
       ],
     );
   }

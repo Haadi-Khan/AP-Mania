@@ -10,8 +10,6 @@ import 'package:hse_assassin/constants/routes.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:developer' as devtools show log;
 
-import 'package:hse_assassin/views/info_view.dart';
-
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 

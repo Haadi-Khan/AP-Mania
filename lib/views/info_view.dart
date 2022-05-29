@@ -61,10 +61,7 @@ class _InfoViewState extends State<InfoView> {
                 children: <TextSpan>[
                   TextSpan(
                     text: textInfoTitle,
-                    style: TextStyle(
-                        color: kBlackColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30),
+                    style: myBoldStyle,
                   ),
                 ],
               ),

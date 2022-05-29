@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
                       TextSpan(
                         text: textLoading,
                         style: TextStyle(
-                          color: kBlueGreenColor,
+                          color: kCyanColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 30,
                         ),
@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
               ),
-              backgroundColor: kPrimaryColor,
+              backgroundColor: kWhiteColor,
             );
         }
       },

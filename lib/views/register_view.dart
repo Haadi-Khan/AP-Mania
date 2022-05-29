@@ -47,7 +47,7 @@ class _RegisterViewState extends State<RegisterView> {
         borderSide: BorderSide(color: kGreyColor, width: 3.0));
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: kPrimaryColor,
+      backgroundColor: kWhiteColor,
       body: SafeArea(
         child: Center(
           child: Stack(
@@ -245,7 +245,7 @@ class _RegisterViewState extends State<RegisterView> {
                         },
                         style: ButtonStyle(
                             foregroundColor:
-                                MaterialStateProperty.all<Color>(kPrimaryColor),
+                                MaterialStateProperty.all<Color>(kWhiteColor),
                             backgroundColor:
                                 MaterialStateProperty.all<Color>(kBlackColor),
                             side: MaterialStateProperty.all<BorderSide>(

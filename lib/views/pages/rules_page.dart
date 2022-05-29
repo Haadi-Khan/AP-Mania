@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:hse_assassin/constants/constants.dart';
 import 'dart:developer' as devtools show log;
@@ -16,18 +18,27 @@ class RulesPage extends StatefulWidget {
 }
 
 class _RulesPageState extends State<RulesPage> {
+  late final TextEditingController _ruleTitle;
+  late final TextEditingController _ruleBody;
+
   List<DataSnapshot> rules = [];
   List<bool> showing = [];
   late final StreamSubscription _testSubscription;
+  bool adminMode = false;
+  late DatabaseReference rulesRef;
 
   @override
   void initState() {
+    _ruleTitle = TextEditingController();
+    _ruleBody = TextEditingController();
     loadRules();
     super.initState();
   }
 
   @override
   void dispose() {
+    _ruleTitle.dispose();
+    _ruleBody.dispose;
     _testSubscription.cancel();
     super.dispose();
   }
@@ -37,77 +48,289 @@ class _RulesPageState extends State<RulesPage> {
     Size size = MediaQuery.of(context).size;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: statusBarColorScroll,
-      child: ListView.builder(
-        itemCount: rules.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Column(
-            children: [
-              SizedBox(
-                height: size.height * 0.05,
-                width: size.width * 0.9,
-                child: Container(
-                  padding: const EdgeInsets.only(bottom: 1.0),
-                  decoration: const BoxDecoration(
-                      border: Border(
-                          bottom:
-                              BorderSide(width: 2.0, color: kDarkGreyColor))),
-                  child: OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        showing[index] = !showing[index];
-                      });
-                    },
-                    style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(kBlackColor),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(kPrimaryColor),
-                        side: MaterialStateProperty.all<BorderSide>(
-                            BorderSide.none)),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: RichText(
-                        textAlign: TextAlign.left,
-                        text: TextSpan(
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: rules[index].key as String,
-                              style: const TextStyle(
-                                  color: kBlackColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          ListView.builder(
+            itemCount: rules.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Column(
+                children: [
+                  SizedBox(
+                    height: size.height * 0.05,
+                    width: size.width * 0.9,
+                    child: Container(
+                      padding: const EdgeInsets.only(bottom: 1.0),
+                      decoration: const BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                                  width: 2.0, color: kDarkGreyColor))),
+                      child: Stack(
+                        children: [
+                          OutlinedButton(
+                            onPressed: () {
+                              setState(() {
+                                showing[index] = !showing[index];
+                              });
+                            },
+                            style: underlinedButton,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  children: [
+                                    WidgetSpan(
+                                      child: showing[index]
+                                          ? const FaIcon(
+                                              FontAwesomeIcons.chevronUp,
+                                              size: 17,
+                                            )
+                                          : const FaIcon(
+                                              FontAwesomeIcons.chevronDown,
+                                              size: 17,
+                                            ),
+                                    ),
+                                    WidgetSpan(
+                                      child: SizedBox(width: size.width * 0.03),
+                                    ),
+                                    TextSpan(
+                                      text: rules[index].child('title').value
+                                          as String,
+                                      style: buttonInfo,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: showing[index],
-                child: SizedBox(
-                  width: size.width * 0.9,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: RichText(
-                      textAlign: TextAlign.left,
-                      text: TextSpan(
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: rules[index].child('text').value as String,
-                            style: const TextStyle(
-                                color: kBlackColor, fontSize: 15),
+                          ),
+                          Visibility(
+                            visible: adminMode,
+                            child: Positioned(
+                              bottom: 5,
+                              right: 10,
+                              child: Row(
+                                children: [
+                                  CupertinoButton(
+                                    minSize: double.minPositive,
+                                    padding: const EdgeInsets.all(5),
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.caretUp,
+                                      size: 20,
+                                      color: kBlackColor,
+                                    ),
+                                    onPressed: () async {
+                                      if (index > 0) {
+                                        final oldCurrentText = rules[index]
+                                            .child('text')
+                                            .value as String;
+                                        final oldCurrentTitle = rules[index]
+                                            .child('title')
+                                            .value as String;
+                                        final oldPrevText = rules[index - 1]
+                                            .child('text')
+                                            .value as String;
+                                        final oldPrevTitle = rules[index - 1]
+                                            .child('title')
+                                            .value as String;
+                                        await rulesRef.child('$index').update({
+                                          'text': oldPrevText,
+                                          'title': oldPrevTitle,
+                                        });
+                                        await rulesRef
+                                            .child('${index - 1}')
+                                            .update({
+                                          'text': oldCurrentText,
+                                          'title': oldCurrentTitle,
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  CupertinoButton(
+                                    minSize: double.minPositive,
+                                    padding: const EdgeInsets.all(5),
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.caretDown,
+                                      size: 20,
+                                      color: kBlackColor,
+                                    ),
+                                    onPressed: () async {
+                                      if (index < rules.length - 1) {
+                                        final oldCurrentText = rules[index]
+                                            .child('text')
+                                            .value as String;
+                                        final oldCurrentTitle = rules[index]
+                                            .child('title')
+                                            .value as String;
+                                        final oldNextText = rules[index + 1]
+                                            .child('text')
+                                            .value as String;
+                                        final oldNextTitle = rules[index + 1]
+                                            .child('title')
+                                            .value as String;
+                                        await rulesRef.child('$index').update({
+                                          'text': oldNextText,
+                                          'title': oldNextTitle,
+                                        });
+                                        await rulesRef
+                                            .child('${index + 1}')
+                                            .update({
+                                          'text': oldCurrentText,
+                                          'title': oldCurrentTitle,
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  CupertinoButton(
+                                    minSize: double.minPositive,
+                                    padding: const EdgeInsets.all(5),
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.pen,
+                                      size: 20,
+                                      color: kBlackColor,
+                                    ),
+                                    onPressed: () {
+                                      _ruleTitle.text = rules[index]
+                                          .child('title')
+                                          .value as String;
+                                      _ruleBody.text = rules[index]
+                                          .child('text')
+                                          .value as String;
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(
+                                                  20.0,
+                                                ),
+                                              ),
+                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                              top: 10.0,
+                                            ),
+                                            title: TextField(
+                                              style: buttonInfo,
+                                              controller: _ruleTitle,
+                                              decoration: const InputDecoration(
+                                                border: InputBorder.none,
+                                              ),
+                                            ),
+                                            content: Stack(
+                                              children: [
+                                                SizedBox(
+                                                  width: size.width * 0.8,
+                                                  height: size.height * 0.6,
+                                                  child: TextField(
+                                                    style: generalText,
+                                                    controller: _ruleBody,
+                                                    expands: true,
+                                                    maxLines: null,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      border: InputBorder.none,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  // TODO: Add style for Save Button
+                                                  bottom: 10,
+                                                  right: 10,
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      FocusManager
+                                                          .instance.primaryFocus
+                                                          ?.unfocus();
+                                                      rulesRef
+                                                          .child(
+                                                              rules[index].key!)
+                                                          .update({
+                                                        'title':
+                                                            _ruleTitle.text,
+                                                        'text': _ruleBody.text
+                                                      });
+                                                    },
+                                                    child: const Text('SAVE'),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  CupertinoButton(
+                                    minSize: double.minPositive,
+                                    padding: const EdgeInsets.all(5),
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.trash,
+                                      size: 20,
+                                      color: kRedColor,
+                                    ),
+                                    onPressed: () {},
+                                  )
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
+                  Visibility(
+                    visible: showing[index],
+                    child: SizedBox(
+                      width: size.width * 0.9,
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: RichText(
+                              textAlign: TextAlign.left,
+                              text: TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: rules[index].child('text').value
+                                        as String,
+                                    style: generalText,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          Visibility(
+            visible: adminMode,
+            child: Positioned(
+              bottom: 10,
+              right: 10,
+              child: Row(
+                children: [
+                  CupertinoButton(
+                    minSize: double.minPositive,
+                    padding: const EdgeInsets.all(5),
+                    child: const FaIcon(
+                      FontAwesomeIcons.plus,
+                      size: 30,
+                      color: kRedColor,
+                    ),
+                    onPressed: () {},
+                  ),
+                ],
               ),
-            ],
-          );
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -118,10 +341,15 @@ class _RulesPageState extends State<RulesPage> {
         await FirebaseDatabase.instance.ref('users/$id/game').once();
     final game = gameSnapshot.snapshot.value;
 
-    DatabaseReference gameUsersRef =
-        FirebaseDatabase.instance.ref('games/$game/rules');
+    final adminSnapshot =
+        await FirebaseDatabase.instance.ref('games/$game/users/$id').once();
+    final admin = adminSnapshot.snapshot.child('admin').value as bool;
+    final verified = adminSnapshot.snapshot.child('verified').value as bool;
+    adminMode = admin && verified;
+
+    rulesRef = FirebaseDatabase.instance.ref('games/$game/rules');
     if (!mounted) return;
-    _testSubscription = gameUsersRef.onValue.listen((DatabaseEvent event) {
+    _testSubscription = rulesRef.onValue.listen((DatabaseEvent event) {
       final data = event.snapshot.children;
       List<DataSnapshot> rulesRefs = [];
       for (DataSnapshot user in data) {
@@ -135,611 +363,8 @@ class _RulesPageState extends State<RulesPage> {
       });
     });
   }
-
-  // List<bool> showing = [];
-  // @override
-  // void initState() {
-  //   for (int i = 0; i < 9; i++) {
-  //     showing.add(false);
-  //   }
-  //   super.initState();
-  // }
-  // ListView getGamesList(Size size) {
-  //   List<String> matches = [];
-  //   for (String element in games!) {
-  //     if (element.toLowerCase().contains(_gameSearch.text.toLowerCase())) {
-  //       matches.add(element);
-  //     }
-  //   }
-  //   return ListView.builder(
-  //     itemCount: matches.length,
-  //     itemBuilder: (BuildContext context, int index) {
-  //       return SizedBox(
-  //         height: size.height * 0.03,
-  //         child: OutlinedButton(
-  //           onPressed: () {},
-  //           style: ButtonStyle(
-  //               shape: MaterialStateProperty.all<OutlinedBorder>(
-  //                   const BeveledRectangleBorder()),
-  //               padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
-  //               foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
-  //               backgroundColor: MaterialStateProperty.all<Color>(kGreyColor),
-  //               side: MaterialStateProperty.all<BorderSide>(BorderSide.none)),
-  //           child: Text(matches[index]),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 }
 
 AppBar rulesBar() {
   return AppBar();
 }
-
-// Center(
-//   child: SingleChildScrollView(
-    // child: Column(
-    //   children: [
-    //     SizedBox(
-    //       height: size.height * 0.05,
-    //       width: size.width * 0.9,
-    //       child: Container(
-    //         padding: const EdgeInsets.only(bottom: 1.0),
-    //         decoration: const BoxDecoration(
-    //             border: Border(
-    //                 bottom:
-    //                     BorderSide(width: 2.0, color: kDarkGreyColor))),
-    //         child: OutlinedButton(
-    //           onPressed: () {
-    //             setState(() {
-    //               showing[0] = !showing[0];
-    //             });
-    //           },
-    //           style: ButtonStyle(
-    //               foregroundColor:
-    //                   MaterialStateProperty.all<Color>(kBlackColor),
-    //               backgroundColor:
-    //                   MaterialStateProperty.all<Color>(kPrimaryColor),
-    //               side: MaterialStateProperty.all<BorderSide>(
-    //                   BorderSide.none)),
-    //           child: Align(
-    //             alignment: Alignment.centerLeft,
-    //             child: RichText(
-    //               textAlign: TextAlign.left,
-    //               text: const TextSpan(
-    //                 children: <TextSpan>[
-    //                   TextSpan(
-    //                     text: textRulesTitle1,
-    //                     style: TextStyle(
-    //                         color: kBlackColor,
-    //                         fontWeight: FontWeight.bold,
-    //                         fontSize: 15),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //     Visibility(
-    //       visible: showing[0],
-    //       child: SizedBox(
-    //         width: size.width * 0.9,
-    //         child: Align(
-    //           alignment: Alignment.centerLeft,
-    //           child: RichText(
-    //             textAlign: TextAlign.left,
-    //             text: const TextSpan(
-    //               children: <TextSpan>[
-    //                 TextSpan(
-    //                   text: textRulesContent1,
-    //                   style: TextStyle(color: kBlackColor, fontSize: 15),
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-//         SizedBox(
-//           height: size.height * 0.05,
-//           width: size.width * 0.9,
-//           child: Container(
-//             padding: const EdgeInsets.only(bottom: 1.0),
-//             decoration: const BoxDecoration(
-//                 border: Border(
-//                     bottom:
-//                         BorderSide(width: 2.0, color: kDarkGreyColor))),
-//             child: OutlinedButton(
-//               onPressed: () {
-//                 setState(() {
-//                   showing[1] = !showing[1];
-//                 });
-//               },
-//               style: ButtonStyle(
-//                   foregroundColor:
-//                       MaterialStateProperty.all<Color>(kBlackColor),
-//                   backgroundColor:
-//                       MaterialStateProperty.all<Color>(kPrimaryColor),
-//                   side: MaterialStateProperty.all<BorderSide>(
-//                       BorderSide.none)),
-//               child: Align(
-//                 alignment: Alignment.centerLeft,
-//                 child: RichText(
-//                   textAlign: TextAlign.left,
-//                   text: const TextSpan(
-//                     children: <TextSpan>[
-//                       TextSpan(
-//                         text: textRulesTitle2,
-//                         style: TextStyle(
-//                             color: kBlackColor,
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 15),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         Visibility(
-//           visible: showing[1],
-//           child: SizedBox(
-//             width: size.width * 0.9,
-//             child: Align(
-//               alignment: Alignment.centerLeft,
-//               child: RichText(
-//                 textAlign: TextAlign.left,
-//                 text: const TextSpan(
-//                   children: <TextSpan>[
-//                     TextSpan(
-//                       text: textRulesContent2,
-//                       style: TextStyle(color: kBlackColor, fontSize: 15),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         SizedBox(
-//           height: size.height * 0.05,
-//           width: size.width * 0.9,
-//           child: Container(
-//             padding: const EdgeInsets.only(bottom: 1.0),
-//             decoration: const BoxDecoration(
-//                 border: Border(
-//                     bottom:
-//                         BorderSide(width: 2.0, color: kDarkGreyColor))),
-//             child: OutlinedButton(
-//               onPressed: () {
-//                 setState(() {
-//                   showing[2] = !showing[2];
-//                 });
-//               },
-//               style: ButtonStyle(
-//                   foregroundColor:
-//                       MaterialStateProperty.all<Color>(kBlackColor),
-//                   backgroundColor:
-//                       MaterialStateProperty.all<Color>(kPrimaryColor),
-//                   side: MaterialStateProperty.all<BorderSide>(
-//                       BorderSide.none)),
-//               child: Align(
-//                 alignment: Alignment.centerLeft,
-//                 child: RichText(
-//                   textAlign: TextAlign.left,
-//                   text: const TextSpan(
-//                     children: <TextSpan>[
-//                       TextSpan(
-//                         text: textRulesTitle3,
-//                         style: TextStyle(
-//                             color: kBlackColor,
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 15),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         Visibility(
-//           visible: showing[2],
-//           child: SizedBox(
-//             width: size.width * 0.9,
-//             child: Align(
-//               alignment: Alignment.centerLeft,
-//               child: RichText(
-//                 textAlign: TextAlign.left,
-//                 text: const TextSpan(
-//                   children: <TextSpan>[
-//                     TextSpan(
-//                       text: textRulesContent3,
-//                       style: TextStyle(color: kBlackColor, fontSize: 15),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         SizedBox(
-//           height: size.height * 0.05,
-//           width: size.width * 0.9,
-//           child: Container(
-//             padding: const EdgeInsets.only(bottom: 1.0),
-//             decoration: const BoxDecoration(
-//                 border: Border(
-//                     bottom:
-//                         BorderSide(width: 2.0, color: kDarkGreyColor))),
-//             child: OutlinedButton(
-//               onPressed: () {
-//                 setState(() {
-//                   showing[3] = !showing[3];
-//                 });
-//               },
-//               style: ButtonStyle(
-//                   foregroundColor:
-//                       MaterialStateProperty.all<Color>(kBlackColor),
-//                   backgroundColor:
-//                       MaterialStateProperty.all<Color>(kPrimaryColor),
-//                   side: MaterialStateProperty.all<BorderSide>(
-//                       BorderSide.none)),
-//               child: Align(
-//                 alignment: Alignment.centerLeft,
-//                 child: RichText(
-//                   textAlign: TextAlign.left,
-//                   text: const TextSpan(
-//                     children: <TextSpan>[
-//                       TextSpan(
-//                         text: textRulesTitle4,
-//                         style: TextStyle(
-//                             color: kBlackColor,
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 15),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         Visibility(
-//           visible: showing[3],
-//           child: SizedBox(
-//             width: size.width * 0.9,
-//             child: Align(
-//               alignment: Alignment.centerLeft,
-//               child: RichText(
-//                 textAlign: TextAlign.left,
-//                 text: const TextSpan(
-//                   children: <TextSpan>[
-//                     TextSpan(
-//                       text: textRulesContent4,
-//                       style: TextStyle(color: kBlackColor, fontSize: 15),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         SizedBox(
-//           height: size.height * 0.05,
-//           width: size.width * 0.9,
-//           child: Container(
-//             padding: const EdgeInsets.only(bottom: 1.0),
-//             decoration: const BoxDecoration(
-//                 border: Border(
-//                     bottom:
-//                         BorderSide(width: 2.0, color: kDarkGreyColor))),
-//             child: OutlinedButton(
-//               onPressed: () {
-//                 setState(() {
-//                   showing[4] = !showing[4];
-//                 });
-//               },
-//               style: ButtonStyle(
-//                   foregroundColor:
-//                       MaterialStateProperty.all<Color>(kBlackColor),
-//                   backgroundColor:
-//                       MaterialStateProperty.all<Color>(kPrimaryColor),
-//                   side: MaterialStateProperty.all<BorderSide>(
-//                       BorderSide.none)),
-//               child: Align(
-//                 alignment: Alignment.centerLeft,
-//                 child: RichText(
-//                   textAlign: TextAlign.left,
-//                   text: const TextSpan(
-//                     children: <TextSpan>[
-//                       TextSpan(
-//                         text: textRulesTitle5,
-//                         style: TextStyle(
-//                             color: kBlackColor,
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 15),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         Visibility(
-//           visible: showing[4],
-//           child: SizedBox(
-//             width: size.width * 0.9,
-//             child: Align(
-//               alignment: Alignment.centerLeft,
-//               child: RichText(
-//                 textAlign: TextAlign.left,
-//                 text: const TextSpan(
-//                   children: <TextSpan>[
-//                     TextSpan(
-//                       text: textRulesContent5,
-//                       style: TextStyle(color: kBlackColor, fontSize: 15),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         SizedBox(
-//           height: size.height * 0.05,
-//           width: size.width * 0.9,
-//           child: Container(
-//             padding: const EdgeInsets.only(bottom: 1.0),
-//             decoration: const BoxDecoration(
-//                 border: Border(
-//                     bottom:
-//                         BorderSide(width: 2.0, color: kDarkGreyColor))),
-//             child: OutlinedButton(
-//               onPressed: () {
-//                 setState(() {
-//                   showing[5] = !showing[5];
-//                 });
-//               },
-//               style: ButtonStyle(
-//                   foregroundColor:
-//                       MaterialStateProperty.all<Color>(kBlackColor),
-//                   backgroundColor:
-//                       MaterialStateProperty.all<Color>(kPrimaryColor),
-//                   side: MaterialStateProperty.all<BorderSide>(
-//                       BorderSide.none)),
-//               child: Align(
-//                 alignment: Alignment.centerLeft,
-//                 child: RichText(
-//                   textAlign: TextAlign.left,
-//                   text: const TextSpan(
-//                     children: <TextSpan>[
-//                       TextSpan(
-//                         text: textRulesTitle6,
-//                         style: TextStyle(
-//                             color: kBlackColor,
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 15),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         Visibility(
-//           visible: showing[5],
-//           child: SizedBox(
-//             width: size.width * 0.9,
-//             child: Align(
-//               alignment: Alignment.centerLeft,
-//               child: RichText(
-//                 textAlign: TextAlign.left,
-//                 text: const TextSpan(
-//                   children: <TextSpan>[
-//                     TextSpan(
-//                       text: textRulesContent6,
-//                       style: TextStyle(color: kBlackColor, fontSize: 15),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         SizedBox(
-//           height: size.height * 0.05,
-//           width: size.width * 0.9,
-//           child: Container(
-//             padding: const EdgeInsets.only(bottom: 1.0),
-//             decoration: const BoxDecoration(
-//                 border: Border(
-//                     bottom:
-//                         BorderSide(width: 2.0, color: kDarkGreyColor))),
-//             child: OutlinedButton(
-//               onPressed: () {
-//                 setState(() {
-//                   showing[6] = !showing[6];
-//                 });
-//               },
-//               style: ButtonStyle(
-//                   foregroundColor:
-//                       MaterialStateProperty.all<Color>(kBlackColor),
-//                   backgroundColor:
-//                       MaterialStateProperty.all<Color>(kPrimaryColor),
-//                   side: MaterialStateProperty.all<BorderSide>(
-//                       BorderSide.none)),
-//               child: Align(
-//                 alignment: Alignment.centerLeft,
-//                 child: RichText(
-//                   textAlign: TextAlign.left,
-//                   text: const TextSpan(
-//                     children: <TextSpan>[
-//                       TextSpan(
-//                         text: textRulesTitle7,
-//                         style: TextStyle(
-//                             color: kBlackColor,
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 15),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         Visibility(
-//           visible: showing[6],
-//           child: SizedBox(
-//             width: size.width * 0.9,
-//             child: Align(
-//               alignment: Alignment.centerLeft,
-//               child: RichText(
-//                 textAlign: TextAlign.left,
-//                 text: const TextSpan(
-//                   children: <TextSpan>[
-//                     TextSpan(
-//                       text: textRulesContent7,
-//                       style: TextStyle(color: kBlackColor, fontSize: 15),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         SizedBox(
-//           height: size.height * 0.05,
-//           width: size.width * 0.9,
-//           child: Container(
-//             padding: const EdgeInsets.only(bottom: 1.0),
-//             decoration: const BoxDecoration(
-//                 border: Border(
-//                     bottom:
-//                         BorderSide(width: 2.0, color: kDarkGreyColor))),
-//             child: OutlinedButton(
-//               onPressed: () {
-//                 setState(() {
-//                   showing[7] = !showing[7];
-//                 });
-//               },
-//               style: ButtonStyle(
-//                   foregroundColor:
-//                       MaterialStateProperty.all<Color>(kBlackColor),
-//                   backgroundColor:
-//                       MaterialStateProperty.all<Color>(kPrimaryColor),
-//                   side: MaterialStateProperty.all<BorderSide>(
-//                       BorderSide.none)),
-//               child: Align(
-//                 alignment: Alignment.centerLeft,
-//                 child: RichText(
-//                   textAlign: TextAlign.left,
-//                   text: const TextSpan(
-//                     children: <TextSpan>[
-//                       TextSpan(
-//                         text: textRulesTitle8,
-//                         style: TextStyle(
-//                             color: kBlackColor,
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 15),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         Visibility(
-//           visible: showing[7],
-//           child: SizedBox(
-//             width: size.width * 0.9,
-//             child: Align(
-//               alignment: Alignment.centerLeft,
-//               child: RichText(
-//                 textAlign: TextAlign.left,
-//                 text: const TextSpan(
-//                   children: <TextSpan>[
-//                     TextSpan(
-//                       text: textRulesContent8,
-//                       style: TextStyle(color: kBlackColor, fontSize: 15),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         SizedBox(
-//           height: size.height * 0.05,
-//           width: size.width * 0.9,
-//           child: Container(
-//             padding: const EdgeInsets.only(bottom: 1.0),
-//             decoration: const BoxDecoration(
-//                 border: Border(
-//                     bottom:
-//                         BorderSide(width: 2.0, color: kDarkGreyColor))),
-//             child: OutlinedButton(
-//               onPressed: () {
-//                 setState(() {
-//                   showing[8] = !showing[8];
-//                 });
-//               },
-//               style: ButtonStyle(
-//                   foregroundColor:
-//                       MaterialStateProperty.all<Color>(kBlackColor),
-//                   backgroundColor:
-//                       MaterialStateProperty.all<Color>(kPrimaryColor),
-//                   side: MaterialStateProperty.all<BorderSide>(
-//                       BorderSide.none)),
-//               child: Align(
-//                 alignment: Alignment.centerLeft,
-//                 child: RichText(
-//                   textAlign: TextAlign.left,
-//                   text: const TextSpan(
-//                     children: <TextSpan>[
-//                       TextSpan(
-//                         text: textRulesTitle9,
-//                         style: TextStyle(
-//                             color: kBlackColor,
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 15),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//         Visibility(
-//           visible: showing[8],
-//           child: SizedBox(
-//             width: size.width * 0.9,
-//             child: Align(
-//               alignment: Alignment.centerLeft,
-//               child: RichText(
-//                 textAlign: TextAlign.left,
-//                 text: const TextSpan(
-//                   children: <TextSpan>[
-//                     TextSpan(
-//                       text: textRulesContent9,
-//                       style: TextStyle(color: kBlackColor, fontSize: 15),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//       ],
-//     ),
-//   ),
-// ),

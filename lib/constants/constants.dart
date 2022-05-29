@@ -5,32 +5,73 @@ import 'package:flutter/services.dart';
 const appTitle = 'AP Assassin';
 
 /*   Color Scheme   */
-const kPrimaryColor = Colors.white;
-const kBlackColor = Colors.black;
+
+/*
+// Light Scheme
+const kWhiteColor = Color(0xFFFAFAFA);
+const kBlackColor = Color(0xFF383A42);
 const kGreyColor = Color.fromARGB(255, 240, 240, 240);
 const kDarkGreyColor = Color.fromARGB(255, 119, 119, 119);
 const kRedColor = Colors.red;
 const kErrorColor = Colors.orange;
-const kBlueGreenColor = Color.fromARGB(255, 47, 169, 118);
-const kMidRedGreyColor = Color.fromARGB(255, 236, 187, 187);
+const kBlueColor = Color.fromARGB(255, 64, 120, 242);
+const kCyanColor = Color.fromARGB(255, 1, 132, 188);
+*/
+
+// Dark Scheme
+const kWhiteColor = Color(0xff282c34);
+const kBlackColor = Color(0xffabb2bf);
+const kGreyColor = Color(0xff5c6370);
+const kDarkGreyColor = Color(0xff4b5263);
+const kRedColor = Color(0xffe06c75);
+const kPurpleColor = Color(0xffc678dd);
+const kGreenColor = Color(0xff98c379);
+const kErrorColor = Color(0xffd19a66);
+const kBlueColor = Color(0xff61afef);
+const kCyanColor = Color(0xff56b6c2);
 
 /*   Text Formatting Section   */
 
 // Status Bar Formatting
 const statusBarColor = SystemUiOverlayStyle(
-    statusBarColor: kPrimaryColor,
+    statusBarColor: kWhiteColor,
     statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.light);
 const statusBarColorScroll = SystemUiOverlayStyle(
-    statusBarColor: kPrimaryColor,
+    statusBarColor: kWhiteColor,
     statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.light);
 
 // General Formatting
 const heading = TextStyle(
     color: kBlackColor, fontWeight: FontWeight.bold, fontSize: 30, height: 1.5);
+
 const buttonInfo =
     TextStyle(color: kBlackColor, fontWeight: FontWeight.bold, fontSize: 15);
+
+const generalText =
+    TextStyle(color: kBlackColor, fontWeight: FontWeight.normal, fontSize: 15);
+
+// Button Styles
+final rectButton = ButtonStyle(
+    shape: MaterialStateProperty.all<OutlinedBorder>(
+      const BeveledRectangleBorder(),
+    ),
+    padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
+    foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
+    backgroundColor: MaterialStateProperty.all<Color>(kGreyColor),
+    side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
+final underlinedButton = ButtonStyle(
+    foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
+    backgroundColor: MaterialStateProperty.all<Color>(kWhiteColor),
+    side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
+final fancyGreyButton = ButtonStyle(
+    shape: MaterialStateProperty.all<OutlinedBorder>(
+        const BeveledRectangleBorder()),
+    padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
+    foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
+    backgroundColor: MaterialStateProperty.all<Color>(kBlueColor),
+    side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
 
 // Popup Formatting
 const popupTitle = TextStyle(
@@ -48,20 +89,8 @@ const homeBlurb = TextStyle(
 // Kill Page Formatting
 const killHeadings = TextStyle(
     color: kBlackColor, fontWeight: FontWeight.bold, fontSize: 30, height: 1.5);
-final killButton = ButtonStyle(
-    shape: MaterialStateProperty.all<OutlinedBorder>(
-      const BeveledRectangleBorder(),
-    ),
-    padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
-    foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
-    backgroundColor: MaterialStateProperty.all<Color>(kGreyColor),
-    side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
 
 // Rules Page Formatting
-final rulesButton = ButtonStyle(
-    foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
-    backgroundColor: MaterialStateProperty.all<Color>(kPrimaryColor),
-    side: MaterialStateProperty.all<BorderSide>(BorderSide.none));
 
 /*   Set Text   */
 

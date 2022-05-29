@@ -208,7 +208,7 @@ class _PeoplePageState extends State<PeoplePage> {
                         ),
                         title: Text(
                           showPeople[index].child('name').value as String,
-                          style: const TextStyle(fontSize: 24.0),
+                          style: popupTitle,
                           textAlign: TextAlign.center,
                         ),
                         content: SizedBox(
@@ -232,12 +232,12 @@ class _PeoplePageState extends State<PeoplePage> {
                               showType != ShowTypes.admin
                                   ? Text(
                                       'Kills: ${showPeople[index].child('kills').value as int}',
-                                      style: const TextStyle(fontSize: 20.0),
+                                      style: popupText,
                                       textAlign: TextAlign.left,
                                     )
                                   : const Text(
                                       'Coordinator',
-                                      style: TextStyle(fontSize: 20.0),
+                                      style: popupText,
                                     ),
                             ],
                           ),
@@ -261,7 +261,7 @@ class _PeoplePageState extends State<PeoplePage> {
                       child: FittedBox(
                         child: Text(
                             showPeople[index].child('name').value.toString(),
-                            style: const TextStyle(color: kBlackColor)),
+                            style: popupText),
                       ),
                     )
                   ],

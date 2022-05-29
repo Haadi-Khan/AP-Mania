@@ -92,8 +92,7 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                           },
                           style: ButtonStyle(
                             backgroundColor: isAdmin == true
-                                ? MaterialStateProperty.all<Color>(
-                                    kMidRedGreyColor)
+                                ? MaterialStateProperty.all<Color>(kBlueColor)
                                 : MaterialStateProperty.all<Color>(kGreyColor),
                             side: MaterialStateProperty.all<BorderSide>(
                                 BorderSide.none),
@@ -118,8 +117,7 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                           },
                           style: ButtonStyle(
                             backgroundColor: isAdmin != null && isAdmin != true
-                                ? MaterialStateProperty.all<Color>(
-                                    kMidRedGreyColor)
+                                ? MaterialStateProperty.all<Color>(kBlueColor)
                                 : MaterialStateProperty.all<Color>(kGreyColor),
                             side: MaterialStateProperty.all<BorderSide>(
                                 BorderSide.none),
@@ -168,20 +166,7 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                                   isNewGame = true;
                                 });
                               },
-                              style: ButtonStyle(
-                                  shape:
-                                      MaterialStateProperty.all<OutlinedBorder>(
-                                          const BeveledRectangleBorder()),
-                                  padding: MaterialStateProperty.all(
-                                      const EdgeInsets.all(0)),
-                                  foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          kBlackColor),
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          kMidRedGreyColor),
-                                  side: MaterialStateProperty.all<BorderSide>(
-                                      BorderSide.none)),
+                              style: fancyGreyButton,
                               child: const Text(textCreateGame),
                             ),
                           ),
@@ -278,7 +263,7 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                       },
                       style: ButtonStyle(
                           foregroundColor:
-                              MaterialStateProperty.all<Color>(kPrimaryColor),
+                              MaterialStateProperty.all<Color>(kWhiteColor),
                           backgroundColor:
                               MaterialStateProperty.all<Color>(kBlackColor),
                           side: MaterialStateProperty.all<BorderSide>(

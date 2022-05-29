@@ -23,14 +23,14 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kPrimaryColor,
+      backgroundColor: kWhiteColor,
       appBar: getAppBar(page, context, this),
       body: getPage(page),
       bottomNavigationBar: Container(
         height: 60,
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+          color: kBlackColor,
+          borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
           ),
@@ -46,8 +46,8 @@ class _MainViewState extends State<MainView> {
                 });
               },
               icon: page == Pages.rules
-                  ? const FaIcon(FontAwesomeIcons.book, color: kErrorColor)
-                  : const FaIcon(FontAwesomeIcons.book, color: kRedColor),
+                  ? const FaIcon(FontAwesomeIcons.book, color: kRedColor)
+                  : const FaIcon(FontAwesomeIcons.book, color: kGreyColor),
             ),
             IconButton(
               enableFeedback: false,
@@ -57,10 +57,9 @@ class _MainViewState extends State<MainView> {
                 });
               },
               icon: page == Pages.hints
-                  ? const FaIcon(FontAwesomeIcons.puzzlePiece,
-                      color: kErrorColor)
+                  ? const FaIcon(FontAwesomeIcons.puzzlePiece, color: kRedColor)
                   : const FaIcon(FontAwesomeIcons.puzzlePiece,
-                      color: kRedColor),
+                      color: kGreyColor),
             ),
             IconButton(
               enableFeedback: false,
@@ -70,8 +69,8 @@ class _MainViewState extends State<MainView> {
                 });
               },
               icon: page == Pages.home
-                  ? const FaIcon(FontAwesomeIcons.house, color: kErrorColor)
-                  : const FaIcon(FontAwesomeIcons.house, color: kRedColor),
+                  ? const FaIcon(FontAwesomeIcons.house, color: kRedColor)
+                  : const FaIcon(FontAwesomeIcons.house, color: kGreyColor),
             ),
             IconButton(
               enableFeedback: false,
@@ -81,8 +80,8 @@ class _MainViewState extends State<MainView> {
                 });
               },
               icon: page == Pages.people
-                  ? const FaIcon(FontAwesomeIcons.userGroup, color: kErrorColor)
-                  : const FaIcon(FontAwesomeIcons.userGroup, color: kRedColor),
+                  ? const FaIcon(FontAwesomeIcons.userGroup, color: kRedColor)
+                  : const FaIcon(FontAwesomeIcons.userGroup, color: kGreyColor),
             ),
             IconButton(
               enableFeedback: false,
@@ -92,8 +91,8 @@ class _MainViewState extends State<MainView> {
                 });
               },
               icon: page == Pages.kills
-                  ? const FaIcon(FontAwesomeIcons.skull, color: kErrorColor)
-                  : const FaIcon(FontAwesomeIcons.skull, color: kRedColor),
+                  ? const FaIcon(FontAwesomeIcons.skull, color: kRedColor)
+                  : const FaIcon(FontAwesomeIcons.skull, color: kGreyColor),
             ),
           ],
         ),

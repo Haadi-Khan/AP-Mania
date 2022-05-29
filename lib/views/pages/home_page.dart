@@ -14,15 +14,13 @@ class HomePage extends StatelessWidget {
         text: TextSpan(
       style: DefaultTextStyle.of(context).style,
       children: const [
-        TextSpan(text: "Welcome to AP Assassin!", style: myBoldStyle),
+        TextSpan(text: "Welcome to AP Assassin!", style: heading),
         TextSpan(
-            text: "Make sure to pay admission dues!\n\n",
-            style: homeBlurbStyle),
+            text: "Make sure to pay admission dues!\n\n", style: homeBlurb),
         TextSpan(
             text: "Make sure to read the rules in the app\n\n",
-            style: homeBlurbStyle),
-        TextSpan(
-            text: "Good luck, and remember to be safe!", style: homeBlurbStyle)
+            style: homeBlurb),
+        TextSpan(text: "Good luck, and remember to be safe!", style: homeBlurb)
       ],
     ));
   }

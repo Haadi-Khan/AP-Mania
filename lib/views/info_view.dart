@@ -49,7 +49,7 @@ class _InfoViewState extends State<InfoView> {
         borderSide: BorderSide(color: kGreyColor, width: 3.0));
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: kPrimaryColor,
+      backgroundColor: kWhiteColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: statusBarColor,
         child: Column(
@@ -61,7 +61,7 @@ class _InfoViewState extends State<InfoView> {
                 children: <TextSpan>[
                   TextSpan(
                     text: textInfoTitle,
-                    style: myBoldStyle,
+                    style: heading,
                   ),
                 ],
               ),
@@ -247,7 +247,7 @@ class _InfoViewState extends State<InfoView> {
                 },
                 style: ButtonStyle(
                     foregroundColor:
-                        MaterialStateProperty.all<Color>(kPrimaryColor),
+                        MaterialStateProperty.all<Color>(kWhiteColor),
                     backgroundColor:
                         MaterialStateProperty.all<Color>(kBlackColor),
                     side:

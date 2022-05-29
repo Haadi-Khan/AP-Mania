@@ -33,7 +33,7 @@ class _VerifyViewState extends State<VerifyView> {
                         TextSpan(
                           text: textRegisterSuccess,
                           style: TextStyle(
-                              color: kBlueGreenColor,
+                              color: kCyanColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 30),
                         ),

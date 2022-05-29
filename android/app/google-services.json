@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "422725335817",
+    "project_id": "ap-assassin",
+    "storage_bucket": "ap-assassin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:422725335817:android:c8ab8e844dfdfe2181f1d8",
+        "android_client_info": {
+          "package_name": "com.mutya.dev.ap_assassin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "422725335817-qoigqen75hhl7pk9t6cr36ivhup449f8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7w-nKXY-LM1dVj6p5Ox4rnFsJM9t3IV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "422725335817-qoigqen75hhl7pk9t6cr36ivhup449f8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "422725335817-usvbh92ck7d27il4f2klrkfmq9tg74ed.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mutya.dev.apAssassin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:422725335817:android:00cfe859ea4995ef81f1d8",
+        "android_client_info": {
+          "package_name": "com.mutya.dev.hse_assassin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "422725335817-qoigqen75hhl7pk9t6cr36ivhup449f8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7w-nKXY-LM1dVj6p5Ox4rnFsJM9t3IV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "422725335817-qoigqen75hhl7pk9t6cr36ivhup449f8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "422725335817-usvbh92ck7d27il4f2klrkfmq9tg74ed.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mutya.dev.apAssassin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

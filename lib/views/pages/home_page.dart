@@ -24,6 +24,9 @@ class _HomePageState extends State<HomePage> {
   bool adminMode = false;
   late DatabaseReference datesRef;
   late DataSnapshot userSnapshot;
+  DateTime? nextRound;
+  DateTime now = DateTime.now();
+  int roundNumber = 0;
 
   @override
   void initState() {
@@ -40,7 +43,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    DateTime now = DateTime.now();
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: statusBarColorScroll,
       child: adminMode
@@ -193,6 +196,24 @@ class _HomePageState extends State<HomePage> {
           : Column(
               children: [
                 SizedBox(height: size.height * 0.5),
+                StreamBuilder(
+                    stream:
+                        Stream.periodic(const Duration(seconds: 1), (i) => i),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<int> snapshot) {
+                      // print(nextRound);
+                      return SizedBox();
+                      // Duration remaining =
+                      //     Duration(milliseconds: estimateTs - now);
+                      // var dateString =
+                      //     '${remaining.inHours}:${format.format(DateTime.fromMillisecondsSinceEpoch(remaining.inMilliseconds))}';
+                      // print(dateString);
+                      // return Container(
+                      //   color: Colors.greenAccent.withOpacity(0.3),
+                      //   alignment: Alignment.center,
+                      //   child: Text(dateString),
+                      // );
+                    })
               ],
             ),
     );
@@ -216,6 +237,7 @@ class _HomePageState extends State<HomePage> {
     _testSubscription = datesRef.onValue.listen((DatabaseEvent event) {
       final data = event.snapshot.children;
       List<DataSnapshot> datesRefs = [];
+      DateTime? nextRoundTemp;
       for (DataSnapshot dateRef in data) {
         datesRefs.add(dateRef);
       }
@@ -226,7 +248,17 @@ class _HomePageState extends State<HomePage> {
       });
       setState(() {
         dates = datesRefs;
+        nextRound = nextRoundTemp;
       });
+      for (DataSnapshot date in dates) {
+        nextRoundTemp = DateTime.parse(date.child('time').value as String);
+        if (now.isBefore(nextRoundTemp)) {
+          setState(() {
+            nextRound = nextRoundTemp;
+            roundNumber = dates.indexOf(date);
+          });
+        }
+      }
     });
   }
 }

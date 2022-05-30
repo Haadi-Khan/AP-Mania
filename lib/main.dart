@@ -15,8 +15,6 @@ import 'package:hse_assassin/views/game_choice_view.dart';
 import 'package:hse_assassin/constants/routes.dart';
 import 'package:hse_assassin/constants/constants.dart';
 
-///TODO: Video Uploads
-///TODO: Video Display
 ///TODO: Assigning Participant Targets
 ///TODO: User Homepage
 ///TODO: Entire Hint Page

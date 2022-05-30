@@ -150,7 +150,7 @@ class _InfoViewState extends State<InfoView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
                         FaIcon(FontAwesomeIcons.images, color: kWhiteColor),
-                        Text(textChoosePhoto),
+                        Text(textChoosePhoto, style: generalText),
                       ],
                     ),
                   ),
@@ -178,7 +178,7 @@ class _InfoViewState extends State<InfoView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
                         FaIcon(FontAwesomeIcons.camera, color: kWhiteColor),
-                        Text(textTakePhoto),
+                        Text(textTakePhoto, style: generalText),
                       ],
                     ),
                   ),

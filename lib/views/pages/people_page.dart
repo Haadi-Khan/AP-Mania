@@ -307,3 +307,12 @@ class _PeoplePageState extends State<PeoplePage> {
     });
   }
 }
+
+/**
+ * 
+  child: getController(index)!.value.isInitialized
+                ? AspectRatio(
+                    aspectRatio: getController(index)!.value.aspectRatio,
+                    child: CachedVideoPlayer(getController(index)!))
+                : const CircularProgressIndicator())
+ */

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -225,9 +226,10 @@ class _HomePageState extends State<HomePage> {
         await FirebaseDatabase.instance.ref('users/$id/game').once();
     final game = gameSnapshot.snapshot.value;
 
-    final userEvent =
-        await FirebaseDatabase.instance.ref('games/$game/users/$id').once();
-    userSnapshot = userEvent.snapshot;
+    final usersRef = FirebaseDatabase.instance.ref('games/$game/users');
+    final usersEvent = await usersRef.once();
+    final usersSnapshot = usersEvent.snapshot;
+    userSnapshot = usersSnapshot.child(id);
     final admin = userSnapshot.child('admin').value as bool;
     final verified = userSnapshot.child('verified').value as bool;
     adminMode = admin && verified;
@@ -248,8 +250,8 @@ class _HomePageState extends State<HomePage> {
       });
       setState(() {
         dates = datesRefs;
-        nextRound = nextRoundTemp;
       });
+
       for (DataSnapshot date in dates) {
         nextRoundTemp = DateTime.parse(date.child('time').value as String);
         if (now.isBefore(nextRoundTemp)) {
@@ -257,10 +259,47 @@ class _HomePageState extends State<HomePage> {
             nextRound = nextRoundTemp;
             roundNumber = dates.indexOf(date);
           });
+          if (date.child('started').value == false) {
+            List uuids = [];
+            for (DataSnapshot user in usersSnapshot.children) {
+              if (user.child('alive').value == true) {
+                uuids.add(user.key);
+              }
+            }
+            List permutation = [];
+            for (int i = 0; i < uuids.length; i++) {
+              permutation.add(i);
+            }
+            while (getMinCycleLength(permutation) < min(3, uuids.length / 20)) {
+              permutation.shuffle();
+            }
+            for (int i = 0; i < uuids.length; i++) {
+              usersRef
+                  .child(uuids[i])
+                  .update({'target': uuids[permutation[i]]});
+            }
+            datesRef.child('${roundNumber - 1}').update({'started': false});
+            FirebaseDatabase.instance.ref('games/$game/started').set('true');
+          }
+          break;
         }
       }
     });
   }
+}
+
+int getMinCycleLength(List perms) {
+  List<int> cycles = [];
+  for (int i = 0; i < perms.length; i++) {
+    int temp = perms[i];
+    int count = 1;
+    while (temp != i) {
+      temp = perms[temp];
+      count += 1;
+    }
+    cycles.add(count);
+  }
+  return cycles.reduce(min);
 }
 
 Future<bool> showLogoutDialog(BuildContext context) {

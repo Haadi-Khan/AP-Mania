@@ -16,7 +16,6 @@ import 'package:hse_assassin/constants/routes.dart';
 import 'package:hse_assassin/constants/constants.dart';
 
 ///TODO: DAN User Homepage
-///TODO: DAN Assigning Participant Targets
 
 ///TODO: HAADI Entire Hint Page
 ///TODO: Verify View on Pages

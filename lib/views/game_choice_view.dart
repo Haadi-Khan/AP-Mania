@@ -261,6 +261,7 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                               "phone": userSnapshot.child("phone").value,
                               "photo_url":
                                   userSnapshot.child("photo_url").value,
+                              "killed_this_round": true,
                             });
                           }
                           if (!mounted) return;
@@ -299,7 +300,9 @@ class _GameChoiceViewState extends State<GameChoiceView> {
     final gameSnapshot = event.snapshot;
     List<String> games = [];
     for (DataSnapshot element in gameSnapshot.children) {
-      games.add(element.key.toString());
+      if (element.child('started').value != true) {
+        games.add(element.key.toString());
+      }
     }
     games.sort();
     setState(() {

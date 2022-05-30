@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,9 +26,13 @@ class _HomePageState extends State<HomePage> {
   bool adminMode = false;
   late DatabaseReference datesRef;
   late DataSnapshot userSnapshot;
+  late DataSnapshot usersSnapshot;
+  late String targetName;
+  late String remainingTime;
   DateTime? nextRound;
   DateTime now = DateTime.now();
   int roundNumber = 0;
+  bool isAlive = false;
 
   @override
   void initState() {
@@ -196,25 +201,161 @@ class _HomePageState extends State<HomePage> {
             )
           : Column(
               children: [
-                SizedBox(height: size.height * 0.5),
+                SizedBox(
+                  height: size.height * 0.5,
+                  child: nextRound == null
+                      ? SizedBox(
+                          // Game has ended
+                          child: isAlive
+                              ? SizedBox(
+                                  // Player is alive
+                                  child: Column(
+                                    children: [
+                                      RichText(
+                                        text: const TextSpan(
+                                            text: 'Congratulations you won!',
+                                            style: heading),
+                                      ),
+                                      SizedBox(
+                                        height: size.height * 0.4,
+                                        child: Image.asset(
+                                            'assets/images/thunderbirdCrosshair.png'),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : SizedBox(
+                                  // Player is dead,
+                                  child: Column(
+                                    children: [
+                                      RichText(
+                                        text: const TextSpan(
+                                            text: 'You have been eliminated',
+                                            style: heading),
+                                      ),
+                                      SizedBox(
+                                        height: size.height * 0.4,
+                                        child: Image.asset(
+                                            'assets/images/thunderbirdCrosshair.png'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                        )
+                      : roundNumber == 0
+                          ? SizedBox(
+                              // Player is dead,
+                              child: Column(
+                                children: [
+                                  RichText(
+                                    text: const TextSpan(
+                                        text: 'You have been eliminated',
+                                        style: heading),
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.4,
+                                    child: Image.asset(
+                                        'assets/images/thunderbirdCrosshair.png'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : isAlive
+                              ? Align(
+                                  // Player is alive
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        child: RichText(
+                                          text: TextSpan(
+                                              text: 'Round $roundNumber',
+                                              style: heading),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        child: RichText(
+                                          text: TextSpan(
+                                              text:
+                                                  'Current Target: $targetName',
+                                              style: redOptionText),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: size.height * 0.4,
+                                        child: CachedNetworkImage(
+                                          imageUrl: usersSnapshot
+                                              .child(userSnapshot
+                                                  .child('target')
+                                                  .value
+                                                  .toString())
+                                              .child('photo_url')
+                                              .value as String,
+                                          placeholder: (context, url) =>
+                                              const CircularProgressIndicator(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : SizedBox(
+                                  // Player is dead,
+                                  child: Column(
+                                    children: [
+                                      RichText(
+                                        text: const TextSpan(
+                                            text: 'You have been eliminated',
+                                            style: heading),
+                                      ),
+                                      SizedBox(
+                                        height: size.height * 0.4,
+                                        child: Image.asset(
+                                            'assets/images/thunderbirdCrosshair.png'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                ),
                 StreamBuilder(
-                    stream:
-                        Stream.periodic(const Duration(seconds: 1), (i) => i),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<int> snapshot) {
-                      // print(nextRound);
-                      return SizedBox();
-                      // Duration remaining =
-                      //     Duration(milliseconds: estimateTs - now);
-                      // var dateString =
-                      //     '${remaining.inHours}:${format.format(DateTime.fromMillisecondsSinceEpoch(remaining.inMilliseconds))}';
-                      // print(dateString);
-                      // return Container(
-                      //   color: Colors.greenAccent.withOpacity(0.3),
-                      //   alignment: Alignment.center,
-                      //   child: Text(dateString),
-                      // );
-                    })
+                  stream: Stream.periodic(const Duration(seconds: 1), (i) => i),
+                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                    var timeLeft = getTimeLeft();
+                    return nextRound != null
+                        ? Container(
+                            padding: const EdgeInsets.all(8.0),
+                            alignment: Alignment.center,
+                            color: kDarkGreyColor,
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  child: roundNumber == 0
+                                      ? RichText(
+                                          text: const TextSpan(
+                                            text: 'Time Until Start',
+                                            style: smallerHeading,
+                                          ),
+                                        )
+                                      : RichText(
+                                          text: const TextSpan(
+                                            text: 'Time Remaining In Round',
+                                            style: smallerHeading,
+                                          ),
+                                        ),
+                                ),
+                                SizedBox(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text: timeLeft,
+                                      style: heading,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : const SizedBox();
+                  },
+                )
               ],
             ),
     );
@@ -228,12 +369,21 @@ class _HomePageState extends State<HomePage> {
 
     final usersRef = FirebaseDatabase.instance.ref('games/$game/users');
     final usersEvent = await usersRef.once();
-    final usersSnapshot = usersEvent.snapshot;
+    usersSnapshot = usersEvent.snapshot;
     userSnapshot = usersSnapshot.child(id);
     final admin = userSnapshot.child('admin').value as bool;
     final verified = userSnapshot.child('verified').value as bool;
-    adminMode = admin && verified;
+    setState(() {
+      adminMode = admin && verified;
+    });
 
+    if (!admin) {
+      usersRef.child('$id/alive').onValue.listen((DatabaseEvent event) {
+        setState(() {
+          isAlive = event.snapshot.value as bool;
+        });
+      });
+    }
     datesRef = FirebaseDatabase.instance.ref('games/$game/rounds');
     if (!mounted) return;
     _testSubscription = datesRef.onValue.listen((DatabaseEvent event) {
@@ -259,10 +409,14 @@ class _HomePageState extends State<HomePage> {
             nextRound = nextRoundTemp;
             roundNumber = dates.indexOf(date);
           });
-          if (date.child('started').value == false) {
+          bool started = roundNumber == 0 ||
+              dates[roundNumber - 1].child('started').value as bool;
+          if (!started) {
             List uuids = [];
             for (DataSnapshot user in usersSnapshot.children) {
-              if (user.child('alive').value == true) {
+              if (user.child('killed_this_round').value == false) {
+                usersRef.child(user.key!).update({'alive': false});
+              } else if (user.child('alive').value == true) {
                 uuids.add(user.key);
               }
             }
@@ -270,7 +424,8 @@ class _HomePageState extends State<HomePage> {
             for (int i = 0; i < uuids.length; i++) {
               permutation.add(i);
             }
-            while (getMinCycleLength(permutation) < min(3, uuids.length / 20)) {
+            while (getMinCycleLength(permutation) <
+                min(uuids.length, max(3, uuids.length / 20))) {
               permutation.shuffle();
             }
             for (int i = 0; i < uuids.length; i++) {
@@ -278,13 +433,34 @@ class _HomePageState extends State<HomePage> {
                   .child(uuids[i])
                   .update({'target': uuids[permutation[i]]});
             }
-            datesRef.child('${roundNumber - 1}').update({'started': false});
-            FirebaseDatabase.instance.ref('games/$game/started').set('true');
+            datesRef.child('${roundNumber - 1}').update({'started': true});
+            FirebaseDatabase.instance.ref('games/$game/started').set(true);
           }
           break;
         }
       }
     });
+    targetName = usersSnapshot
+        .child(userSnapshot.child('target').value.toString())
+        .child('name')
+        .value
+        .toString();
+  }
+
+  String getTimeLeft() {
+    format(Duration d) {
+      final days = d.inDays;
+      final hours = d.inHours - 24 * d.inDays;
+      final minutes = d.inMinutes - 60 * d.inHours;
+      final seconds = d.inSeconds - 60 * d.inMinutes;
+      return '$days:${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    }
+
+    if (nextRound != null) {
+      return format(nextRound!.difference(DateTime.now().toUtc()));
+    } else {
+      return '';
+    }
   }
 }
 

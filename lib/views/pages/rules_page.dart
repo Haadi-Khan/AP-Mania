@@ -301,24 +301,20 @@ class _RulesPageState extends State<RulesPage> {
                     visible: showing[index],
                     child: SizedBox(
                       width: size.width * 0.9,
-                      child: Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: rules[index].child('text').value
-                                        as String,
-                                    style: generalText,
-                                  ),
-                                ],
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: RichText(
+                          textAlign: TextAlign.left,
+                          text: TextSpan(
+                            children: <TextSpan>[
+                              TextSpan(
+                                text:
+                                    rules[index].child('text').value as String,
+                                style: generalText,
                               ),
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
@@ -432,16 +428,15 @@ class _RulesPageState extends State<RulesPage> {
         await FirebaseDatabase.instance.ref('games/$game/users/$id').once();
     final admin = adminSnapshot.snapshot.child('admin').value as bool;
     final verified = adminSnapshot.snapshot.child('verified').value as bool;
-    adminMode = admin && verified;
+    setState(() {
+      adminMode = admin && verified;
+    });
 
     rulesRef = FirebaseDatabase.instance.ref('games/$game/rules');
     if (!mounted) return;
     _testSubscription = rulesRef.onValue.listen((DatabaseEvent event) {
       final data = event.snapshot.children;
-      List<DataSnapshot> rulesRefs = [];
-      for (DataSnapshot user in data) {
-        rulesRefs.add(user);
-      }
+      List<DataSnapshot> rulesRefs = List.from(data);
       setState(() {
         rules = rulesRefs;
         for (int i = 0; i < rules.length; i++) {

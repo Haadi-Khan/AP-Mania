@@ -2,13 +2,17 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/constants/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-enum ShowTypes { alive, all, admin }
+enum ShowTypes { alive, all, admin, unverified }
 
 enum SortTypes { aToZ, zToA, mostKills }
+
+enum AdminSortTypes { aToZ, zToA, mostKills, unverified }
 
 class PeoplePage extends StatefulWidget {
   const PeoplePage({Key? key}) : super(key: key);
@@ -21,6 +25,8 @@ class _PeoplePageState extends State<PeoplePage> {
   List<DataSnapshot> people = [];
   List<DataSnapshot> showPeople = [];
   late final StreamSubscription _testSubscription;
+  late DatabaseReference usersRef;
+  bool adminMode = false;
 
   ShowTypes showType = ShowTypes.alive;
   SortTypes sortType = SortTypes.aToZ;
@@ -52,20 +58,39 @@ class _PeoplePageState extends State<PeoplePage> {
                 value: showType,
                 alignment: Alignment.center,
                 style: buttonInfo,
-                items: const [
-                  DropdownMenuItem(
-                    value: ShowTypes.alive,
-                    child: Text(textShowAlive),
-                  ),
-                  DropdownMenuItem(
-                    value: ShowTypes.all,
-                    child: Text(textShowAll),
-                  ),
-                  DropdownMenuItem(
-                    value: ShowTypes.admin,
-                    child: Text(textShowAdmin),
-                  ),
-                ],
+                items: adminMode
+                    ? const [
+                        DropdownMenuItem(
+                          value: ShowTypes.alive,
+                          child: Text(textShowAlive),
+                        ),
+                        DropdownMenuItem(
+                          value: ShowTypes.all,
+                          child: Text(textShowAll),
+                        ),
+                        DropdownMenuItem(
+                          value: ShowTypes.admin,
+                          child: Text(textShowAdmin),
+                        ),
+                        DropdownMenuItem(
+                          value: ShowTypes.unverified,
+                          child: Text(textShowUnverified),
+                        ),
+                      ]
+                    : const [
+                        DropdownMenuItem(
+                          value: ShowTypes.alive,
+                          child: Text(textShowAlive),
+                        ),
+                        DropdownMenuItem(
+                          value: ShowTypes.all,
+                          child: Text(textShowAll),
+                        ),
+                        DropdownMenuItem(
+                          value: ShowTypes.admin,
+                          child: Text(textShowAdmin),
+                        ),
+                      ],
                 onChanged: (ShowTypes? newValue) {
                   setState(() {
                     showType = newValue!;
@@ -73,26 +98,35 @@ class _PeoplePageState extends State<PeoplePage> {
                       case ShowTypes.admin:
                         showPeople = [];
                         for (DataSnapshot person in people) {
-                          if (person.child('admin').value == true) {
+                          if (person.child('admin').value == true &&
+                              person.child('verified').value == true) {
                             showPeople.add(person);
                           }
                         }
-
                         break;
                       case ShowTypes.alive:
                         showPeople = [];
                         for (DataSnapshot person in people) {
-                          if (person.child('admin').value == false) {
-                            if (person.child('alive').value == true) {
-                              showPeople.add(person);
-                            }
+                          if (person.child('admin').value == false &&
+                              person.child('alive').value == true &&
+                              person.child('verified').value == true) {
+                            showPeople.add(person);
                           }
                         }
                         break;
                       case ShowTypes.all:
                         showPeople = [];
                         for (DataSnapshot person in people) {
-                          if (person.child('admin').value == false) {
+                          if (person.child('admin').value == false &&
+                              person.child('verified').value == true) {
+                            showPeople.add(person);
+                          }
+                        }
+                        break;
+                      case ShowTypes.unverified:
+                        showPeople = [];
+                        for (DataSnapshot person in people) {
+                          if (person.child('verified').value == false) {
                             showPeople.add(person);
                           }
                         }
@@ -125,7 +159,6 @@ class _PeoplePageState extends State<PeoplePage> {
                             return killsA - killsB;
                           });
                         }
-
                         break;
                     }
                   });
@@ -216,34 +249,126 @@ class _PeoplePageState extends State<PeoplePage> {
                           style: popupTitle,
                           textAlign: TextAlign.center,
                         ),
-                        content: SizedBox(
-                          height: size.height * 0.4,
-                          child: Column(
+                        content: FittedBox(
+                          child: Stack(
                             children: [
-                              Expanded(
-                                child: CachedNetworkImage(
-                                  imageUrl: showPeople[index]
-                                      .child('photo_url')
-                                      .value as String,
-                                  placeholder: (context, url) => const Center(
+                              Column(
+                                children: [
+                                  Center(
                                     child: SizedBox(
-                                      child: CircularProgressIndicator(),
+                                      child: CachedNetworkImage(
+                                        height: size.height * 0.4,
+                                        imageUrl: showPeople[index]
+                                            .child('photo_url')
+                                            .value as String,
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                          child: SizedBox(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                      ),
                                     ),
                                   ),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
+                                  SizedBox(
+                                    height: size.height * 0.05,
+                                    child: Center(
+                                      child: showType != ShowTypes.admin
+                                          ? Text(
+                                              'Kills: ${showPeople[index].child('kills').value as int}',
+                                              style: popupText,
+                                              textAlign: TextAlign.left,
+                                            )
+                                          : const Text(
+                                              'Coordinator',
+                                              style: popupText,
+                                            ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                child: Visibility(
+                                  visible: adminMode,
+                                  child: showPeople[index].child('admin').value
+                                          as bool
+                                      ? const SizedBox()
+                                      : showPeople[index].child('alive').value
+                                              as bool
+                                          ? CupertinoButton(
+                                              padding: const EdgeInsets.all(5),
+                                              child: const FaIcon(
+                                                FontAwesomeIcons.skull,
+                                                size: 20,
+                                                color: kWhiteColor,
+                                              ),
+                                              onPressed: () async {
+                                                Navigator.of(context).pop();
+                                                usersRef
+                                                    .child(
+                                                        showPeople[index].key!)
+                                                    .update({'alive': false});
+                                              },
+                                            )
+                                          : CupertinoButton(
+                                              padding: const EdgeInsets.all(5),
+                                              child: const FaIcon(
+                                                FontAwesomeIcons.heart,
+                                                size: 20,
+                                                color: kWhiteColor,
+                                              ),
+                                              onPressed: () async {
+                                                Navigator.of(context).pop();
+                                                usersRef
+                                                    .child(
+                                                        showPeople[index].key!)
+                                                    .update({'alive': true});
+                                              },
+                                            ),
                                 ),
                               ),
-                              showType != ShowTypes.admin
-                                  ? Text(
-                                      'Kills: ${showPeople[index].child('kills').value as int}',
-                                      style: popupText,
-                                      textAlign: TextAlign.left,
-                                    )
-                                  : const Text(
-                                      'Coordinator',
-                                      style: popupText,
-                                    ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Visibility(
+                                  visible: adminMode,
+                                  child: showPeople[index]
+                                          .child('verified')
+                                          .value as bool
+                                      ? CupertinoButton(
+                                          padding: const EdgeInsets.all(5),
+                                          child: const FaIcon(
+                                            FontAwesomeIcons.x,
+                                            size: 20,
+                                            color: kWhiteColor,
+                                          ),
+                                          onPressed: () async {
+                                            Navigator.of(context).pop();
+                                            usersRef
+                                                .child(showPeople[index].key!)
+                                                .update({'verified': false});
+                                          },
+                                        )
+                                      : CupertinoButton(
+                                          padding: const EdgeInsets.all(5),
+                                          child: const FaIcon(
+                                            FontAwesomeIcons.check,
+                                            size: 20,
+                                            color: kWhiteColor,
+                                          ),
+                                          onPressed: () async {
+                                            Navigator.of(context).pop();
+                                            usersRef
+                                                .child(showPeople[index].key!)
+                                                .update({'verified': true});
+                                          },
+                                        ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -285,6 +410,16 @@ class _PeoplePageState extends State<PeoplePage> {
         await FirebaseDatabase.instance.ref('users/$id/game').once();
     final game = gameSnapshot.snapshot.value;
 
+    final adminSnapshot =
+        await FirebaseDatabase.instance.ref('games/$game/users/$id').once();
+    final admin = adminSnapshot.snapshot.child('admin').value as bool;
+    final verified = adminSnapshot.snapshot.child('verified').value as bool;
+    setState(() {
+      adminMode = admin && verified;
+    });
+
+    usersRef = FirebaseDatabase.instance.ref('games/$game/users');
+
     DatabaseReference gameUsersRef =
         FirebaseDatabase.instance.ref('games/$game/users');
     if (!mounted) return;
@@ -296,12 +431,70 @@ class _PeoplePageState extends State<PeoplePage> {
       }
       setState(() {
         people = peopleRefs;
-        for (DataSnapshot person in people) {
-          if (person.child('admin').value == false) {
-            if (person.child('alive').value == true) {
-              showPeople.add(person);
+        showPeople = [];
+        switch (showType) {
+          case ShowTypes.admin:
+            showPeople = [];
+            for (DataSnapshot person in people) {
+              if (person.child('admin').value == true &&
+                  person.child('verified').value == true) {
+                showPeople.add(person);
+              }
             }
-          }
+
+            break;
+          case ShowTypes.alive:
+            showPeople = [];
+            for (DataSnapshot person in people) {
+              if (person.child('admin').value == false &&
+                  person.child('alive').value == true &&
+                  person.child('verified').value == true) {
+                showPeople.add(person);
+              }
+            }
+            break;
+          case ShowTypes.all:
+            showPeople = [];
+            for (DataSnapshot person in people) {
+              if (person.child('admin').value == false &&
+                  person.child('verified').value == true) {
+                showPeople.add(person);
+              }
+            }
+            break;
+          case ShowTypes.unverified:
+            showPeople = [];
+            for (DataSnapshot person in people) {
+              if (person.child('verified').value == false) {
+                showPeople.add(person);
+              }
+            }
+            break;
+        }
+        switch (sortType) {
+          case SortTypes.aToZ:
+            showPeople.sort((a, b) {
+              String nameA = a.child('name').value as String;
+              String nameB = b.child('name').value as String;
+              return nameA.toLowerCase().compareTo(nameB.toLowerCase());
+            });
+            break;
+          case SortTypes.zToA:
+            showPeople.sort((a, b) {
+              String nameA = a.child('name').value as String;
+              String nameB = b.child('name').value as String;
+              return nameB.toLowerCase().compareTo(nameA.toLowerCase());
+            });
+            break;
+          case SortTypes.mostKills:
+            if (showType != ShowTypes.admin) {
+              showPeople.sort((a, b) {
+                int killsA = a.child('kills').value as int;
+                int killsB = b.child('kills').value as int;
+                return killsA - killsB;
+              });
+            }
+            break;
         }
       });
     });
@@ -314,3 +507,8 @@ AppBar peopleBar(BuildContext context, State state) {
     backgroundColor: kBlackColor,
   );
 }
+
+
+/*
+
+*/

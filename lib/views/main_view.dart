@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/constants/constants.dart';
@@ -7,6 +9,7 @@ import 'package:hse_assassin/views/pages/kills_page.dart';
 import 'package:hse_assassin/views/pages/people_page.dart';
 import 'package:hse_assassin/views/pages/rules_page.dart';
 import 'package:hse_assassin/views/pages/hints_page.dart';
+import 'package:hse_assassin/views/pages/verify_page.dart';
 
 enum Pages { rules, hints, home, people, kills }
 
@@ -18,14 +21,21 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
+  bool verified = false;
   Pages page = Pages.home;
+
+  @override
+  void initState() {
+    loadVerified();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBlackColor,
       appBar: getAppBar(page, context, this),
-      body: getPage(page),
+      body: getPage(page, verified),
       bottomNavigationBar: Container(
         height: 60,
         decoration: const BoxDecoration(
@@ -104,6 +114,20 @@ class _MainViewState extends State<MainView> {
       ),
     );
   }
+
+  loadVerified() async {
+    String id = FirebaseAuth.instance.currentUser!.uid;
+    final gameSnapshot =
+        await FirebaseDatabase.instance.ref('users/$id/game').once();
+    final game = gameSnapshot.snapshot.value;
+
+    final verifiedRef =
+        FirebaseDatabase.instance.ref('games/$game/users/$id/verified');
+    final verifiedEvent = await verifiedRef.once();
+    setState(() {
+      verified = verifiedEvent.snapshot.value as bool;
+    });
+  }
 }
 
 AppBar getAppBar(Pages page, BuildContext context, State state) {
@@ -121,17 +145,26 @@ AppBar getAppBar(Pages page, BuildContext context, State state) {
   }
 }
 
-Widget getPage(Pages page) {
-  switch (page) {
-    case Pages.hints:
-      return const HintsPage();
-    case Pages.rules:
-      return const RulesPage();
-    case Pages.home:
-      return const HomePage();
-    case Pages.people:
-      return const PeoplePage();
-    case Pages.kills:
-      return const KillsPage();
+Widget getPage(Pages page, bool verified) {
+  if (verified) {
+    switch (page) {
+      case Pages.hints:
+        return const HintsPage();
+      case Pages.rules:
+        return const RulesPage();
+      case Pages.home:
+        return const HomePage();
+      case Pages.people:
+        return const PeoplePage();
+      case Pages.kills:
+        return const KillsPage();
+    }
+  } else {
+    switch (page) {
+      case Pages.rules:
+        return const RulesPage();
+      default:
+        return const VerifyPage();
+    }
   }
 }

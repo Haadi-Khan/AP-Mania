@@ -170,6 +170,7 @@ const textLogoutCheck = 'Are you sure you want to log out?';
 const textShowAlive = 'Remaining Players';
 const textShowAll = 'All Players';
 const textShowAdmin = 'Coordinators';
+const textShowUnverified = 'Unverified';
 
 const textSortAZ = 'A - Z';
 const textSortZA = 'Z - A';
@@ -178,3 +179,7 @@ const textSortKills = 'Most Kills';
 // Rules Text
 const textRulesSectionTemp = 'New Rules Section';
 const textRulesBodyTemp = 'New Rules';
+
+// Hints Text
+const textSaveButton = 'SAVE';
+const textHintMessage = 'Hint Message';

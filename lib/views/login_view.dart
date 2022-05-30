@@ -189,6 +189,12 @@ class _LoginViewState extends State<LoginView> {
                                 errorMessage = textErrorWrongEmail;
                               });
                               _email.clear();
+                            } else if (e.code == 'invalid-email' ||
+                                password == '') {
+                              setState(() {
+                                errorMessage = textErrorInvalidEmail;
+                              });
+                              _email.clear();
                             } else if (e.code == 'wrong-password') {
                               setState(() {
                                 errorMessage = textErrorWrongPassword;

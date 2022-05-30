@@ -452,6 +452,9 @@ class _RulesPageState extends State<RulesPage> {
   }
 }
 
-AppBar rulesBar() {
-  return AppBar(backgroundColor: kBlackColor);
+AppBar rulesBar(BuildContext context, State state) {
+  return AppBar(
+    title: const Text('Rules', style: smallerHeading),
+    backgroundColor: kBlackColor,
+  );
 }

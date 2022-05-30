@@ -74,9 +74,9 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const FaIcon(FontAwesomeIcons.circleExclamation,
-                                  color: kErrorColor),
+                                  color: kOrangeColor),
                               Text(errorMessage ?? '',
-                                  style: const TextStyle(color: kErrorColor)),
+                                  style: const TextStyle(color: kOrangeColor)),
                             ],
                           ),
                   ),

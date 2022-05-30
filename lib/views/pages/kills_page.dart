@@ -245,3 +245,10 @@ class _KillsPageState extends State<KillsPage> {
     });
   }
 }
+
+AppBar killBar(BuildContext context, State state) {
+  return AppBar(
+    title: const Text('Recent Kills', style: smallerHeading),
+    backgroundColor: kBlackColor,
+  );
+}

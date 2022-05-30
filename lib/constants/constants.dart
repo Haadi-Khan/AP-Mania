@@ -26,7 +26,7 @@ const kDarkGreyColor = Color(0xff4b5263);
 const kRedColor = Color(0xffe06c75);
 const kPurpleColor = Color(0xffc678dd);
 const kGreenColor = Color(0xff98c379);
-const kErrorColor = Color(0xffd19a66);
+const kOrangeColor = Color(0xffd19a66);
 const kBlueColor = Color(0xff61afef);
 const kCyanColor = Color(0xff56b6c2);
 

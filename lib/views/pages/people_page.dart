@@ -308,11 +308,9 @@ class _PeoplePageState extends State<PeoplePage> {
   }
 }
 
-/**
- * 
-  child: getController(index)!.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: getController(index)!.value.aspectRatio,
-                    child: CachedVideoPlayer(getController(index)!))
-                : const CircularProgressIndicator())
- */
+AppBar peopleBar(BuildContext context, State state) {
+  return AppBar(
+    title: const Text('Players', style: smallerHeading),
+    backgroundColor: kBlackColor,
+  );
+}

@@ -15,10 +15,12 @@ import 'package:hse_assassin/views/game_choice_view.dart';
 import 'package:hse_assassin/constants/routes.dart';
 import 'package:hse_assassin/constants/constants.dart';
 
-///TODO: Assigning Participant Targets
-///TODO: User Homepage
-///TODO: Entire Hint Page
+///TODO: DAN User Homepage
+///TODO: DAN Assigning Participant Targets
+
+///TODO: HAADI Entire Hint Page
 ///TODO: Verify View on Pages
+
 ///TODO: Write the rules
 ///TODO: Figure out beta tester stuff
 ///TODO: Do a massive shit ton of testing

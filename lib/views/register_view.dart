@@ -69,7 +69,7 @@ class _RegisterViewState extends State<RegisterView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const FaIcon(FontAwesomeIcons.circleExclamation,
-                                  color: kErrorColor),
+                                  color: kOrangeColor),
                               Text(errorMessage ?? '', style: generalText),
                             ],
                           ),

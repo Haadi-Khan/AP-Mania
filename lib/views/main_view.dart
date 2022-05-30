@@ -109,15 +109,15 @@ class _MainViewState extends State<MainView> {
 AppBar getAppBar(Pages page, BuildContext context, State state) {
   switch (page) {
     case Pages.hints:
-      return rulesBar();
+      return hintsBar(context, state);
     case Pages.rules:
-      return rulesBar();
+      return rulesBar(context, state);
     case Pages.home:
       return homeBar(context, state);
     case Pages.people:
-      return rulesBar();
+      return peopleBar(context, state);
     case Pages.kills:
-      return rulesBar();
+      return killBar(context, state);
   }
 }
 

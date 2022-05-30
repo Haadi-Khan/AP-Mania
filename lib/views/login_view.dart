@@ -85,9 +85,9 @@ class _LoginViewState extends State<LoginView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const FaIcon(FontAwesomeIcons.circleExclamation,
-                                  color: kErrorColor),
+                                  color: kOrangeColor),
                               Text(errorMessage ?? '',
-                                  style: const TextStyle(color: kErrorColor)),
+                                  style: const TextStyle(color: kOrangeColor)),
                             ],
                           ),
                   ),

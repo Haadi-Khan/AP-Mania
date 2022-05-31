@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   DateTime now = DateTime.now();
   int roundNumber = 0;
   bool isAlive = false;
+  bool loaded = false;
 
   @override
   void initState() {
@@ -51,312 +52,350 @@ class _HomePageState extends State<HomePage> {
     Size size = MediaQuery.of(context).size;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: statusBarColorScroll,
-      child: adminMode
-          ? Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                ListView.builder(
-                  itemCount: dates.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Stack(
-                      children: [
-                        SizedBox(
-                          height: size.height * 0.03,
-                          child: Text(
-                            DateTime.parse(
-                                    dates[index].child('time').value as String)
-                                .toLocal()
-                                .toIso8601String()
-                                .replaceAll('T', ' '),
-                            style: buttonInfo,
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 5,
-                          right: 10,
-                          child: Row(
-                            children: [
-                              CupertinoButton(
-                                minSize: double.minPositive,
-                                padding: const EdgeInsets.all(5),
-                                child: const FaIcon(
-                                  FontAwesomeIcons.pen,
-                                  size: 15,
-                                  color: kWhiteColor,
-                                ),
-                                onPressed: () async {
-                                  final datePicked = await showDatePicker(
-                                    context: context,
-                                    initialDate: now,
-                                    firstDate: now,
-                                    lastDate: DateTime(
-                                      now.year + 1,
-                                      now.month,
-                                      now.day,
-                                    ),
-                                  );
-                                  if (datePicked != null) {
-                                    final timePicked = await showTimePicker(
-                                      context: context,
-                                      initialTime:
-                                          const TimeOfDay(hour: 00, minute: 00),
-                                    );
-                                    if (timePicked != null) {
-                                      DateTime newTime = DateTime(
-                                              datePicked.year,
-                                              datePicked.month,
-                                              datePicked.day,
-                                              timePicked.hour,
-                                              timePicked.minute)
-                                          .toUtc();
-                                      datesRef.child('$index').update({
-                                        'time': newTime.toIso8601String(),
-                                        'started': false
-                                      });
-                                    }
-                                  }
-                                },
+      value: statusBarColorMain,
+      child: loaded
+          ? adminMode
+              ? Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    ListView.builder(
+                      itemCount: dates.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Stack(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                              child: Text(
+                                DateTime.parse(dates[index].child('time').value
+                                        as String)
+                                    .toLocal()
+                                    .toIso8601String()
+                                    .replaceAll('T', ' '),
+                                style: buttonInfo,
                               ),
-                              CupertinoButton(
-                                minSize: double.minPositive,
-                                padding: const EdgeInsets.all(5),
-                                child: const FaIcon(
-                                  FontAwesomeIcons.trash,
-                                  size: 15,
-                                  color: kRedColor,
+                            ),
+                            Positioned(
+                              bottom: 5,
+                              right: 10,
+                              child: Row(
+                                children: [
+                                  CupertinoButton(
+                                    minSize: double.minPositive,
+                                    padding: const EdgeInsets.all(5),
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.pen,
+                                      size: 15,
+                                      color: kWhiteColor,
+                                    ),
+                                    onPressed: () async {
+                                      final datePicked = await showDatePicker(
+                                        context: context,
+                                        initialDate: now,
+                                        firstDate: now,
+                                        lastDate: DateTime(
+                                          now.year + 1,
+                                          now.month,
+                                          now.day,
+                                        ),
+                                      );
+                                      if (datePicked != null) {
+                                        final timePicked = await showTimePicker(
+                                          context: context,
+                                          initialTime: const TimeOfDay(
+                                              hour: 00, minute: 00),
+                                        );
+                                        if (timePicked != null) {
+                                          DateTime newTime = DateTime(
+                                                  datePicked.year,
+                                                  datePicked.month,
+                                                  datePicked.day,
+                                                  timePicked.hour,
+                                                  timePicked.minute)
+                                              .toUtc();
+                                          datesRef.child('$index').update({
+                                            'time': newTime.toIso8601String(),
+                                            'started': false
+                                          });
+                                        }
+                                      }
+                                    },
+                                  ),
+                                  CupertinoButton(
+                                    minSize: double.minPositive,
+                                    padding: const EdgeInsets.all(5),
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.trash,
+                                      size: 15,
+                                      color: kRedColor,
+                                    ),
+                                    onPressed: () {
+                                      for (int i = index;
+                                          i < dates.length - 1;
+                                          i++) {
+                                        datesRef.child('$i').set({
+                                          'time':
+                                              dates[i + 1].child('time').value!,
+                                          'started': dates[i + 1]
+                                              .child('started')
+                                              .value!
+                                        });
+                                      }
+                                      datesRef
+                                          .child('${dates.length - 1}')
+                                          .remove();
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    Positioned(
+                      bottom: 10,
+                      right: 10,
+                      child: Row(
+                        children: [
+                          CupertinoButton(
+                            minSize: double.minPositive,
+                            padding: const EdgeInsets.all(5),
+                            child: const FaIcon(
+                              FontAwesomeIcons.plus,
+                              size: 30,
+                              color: kRedColor,
+                            ),
+                            onPressed: () async {
+                              final datePicked = await showDatePicker(
+                                context: context,
+                                initialDate: now,
+                                firstDate: now,
+                                lastDate: DateTime(
+                                  now.year + 1,
+                                  now.month,
+                                  now.day,
                                 ),
-                                onPressed: () {
-                                  for (int i = index;
-                                      i < dates.length - 1;
-                                      i++) {
-                                    datesRef.child('$i').set({
-                                      'time': dates[i + 1].child('time').value!,
-                                      'started':
-                                          dates[i + 1].child('started').value!
-                                    });
-                                  }
-                                  datesRef
-                                      .child('${dates.length - 1}')
-                                      .remove();
-                                },
+                              );
+                              if (datePicked != null) {
+                                final timePicked = await showTimePicker(
+                                  context: context,
+                                  initialTime:
+                                      const TimeOfDay(hour: 00, minute: 00),
+                                );
+                                if (timePicked != null) {
+                                  DateTime newTime = DateTime(
+                                          datePicked.year,
+                                          datePicked.month,
+                                          datePicked.day,
+                                          timePicked.hour,
+                                          timePicked.minute)
+                                      .toUtc();
+                                  datesRef.child('${dates.length}').set({
+                                    'time': newTime.toIso8601String(),
+                                    'started': false
+                                  });
+                                }
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    SizedBox(
+                      height: size.height * 0.5,
+                      child: nextRound == null
+                          ? SizedBox(
+                              // Game has ended
+                              child: isAlive
+                                  ? SizedBox(
+                                      // Player is alive
+                                      child: Column(
+                                        children: [
+                                          RichText(
+                                            text: const TextSpan(
+                                                text:
+                                                    'Congratulations you won!',
+                                                style: heading),
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.4,
+                                            child: Image.asset(
+                                                'assets/images/thunderbirdCrosshair.png'),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      // Player is dead,
+                                      child: Column(
+                                        children: [
+                                          RichText(
+                                            text: const TextSpan(
+                                                text:
+                                                    'You have been eliminated',
+                                                style: heading),
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.4,
+                                            child: Image.asset(
+                                                'assets/images/thunderbirdCrosshair.png'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                            )
+                          : roundNumber == 0
+                              ? SizedBox(
+                                  // Player is dead,
+                                  child: Column(
+                                    children: [
+                                      RichText(
+                                        text: const TextSpan(
+                                            text: 'You have been eliminated',
+                                            style: heading),
+                                      ),
+                                      SizedBox(
+                                        height: size.height * 0.4,
+                                        child: Image.asset(
+                                            'assets/images/thunderbirdCrosshair.png'),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : isAlive
+                                  ? Align(
+                                      // Player is alive
+                                      alignment: Alignment.center,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            child: RichText(
+                                              text: TextSpan(
+                                                  text: 'Round $roundNumber',
+                                                  style: heading),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            child: RichText(
+                                              text: TextSpan(
+                                                  text:
+                                                      'Current Target: $targetName',
+                                                  style: redOptionText),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.4,
+                                            child: CachedNetworkImage(
+                                              imageUrl: usersSnapshot
+                                                  .child(userSnapshot
+                                                      .child('target')
+                                                      .value
+                                                      .toString())
+                                                  .child('photo_url')
+                                                  .value as String,
+                                              placeholder: (context, url) =>
+                                                  const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: kCyanColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      // Player is dead,
+                                      child: Column(
+                                        children: [
+                                          RichText(
+                                            text: const TextSpan(
+                                                text:
+                                                    'You have been eliminated',
+                                                style: heading),
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.4,
+                                            child: Image.asset(
+                                                'assets/images/thunderbirdCrosshair.png'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                    ),
+                    StreamBuilder(
+                      stream:
+                          Stream.periodic(const Duration(seconds: 1), (i) => i),
+                      builder:
+                          (BuildContext context, AsyncSnapshot<int> snapshot) {
+                        var timeLeft = getTimeLeft();
+                        return nextRound != null
+                            ? Container(
+                                padding: const EdgeInsets.all(8.0),
+                                alignment: Alignment.center,
+                                color: kDarkGreyColor,
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      child: roundNumber == 0
+                                          ? RichText(
+                                              text: const TextSpan(
+                                                text: 'Time Until Start',
+                                                style: smallerHeading,
+                                              ),
+                                            )
+                                          : RichText(
+                                              text: const TextSpan(
+                                                text: 'Time Remaining In Round',
+                                                style: smallerHeading,
+                                              ),
+                                            ),
+                                    ),
+                                    SizedBox(
+                                      child: RichText(
+                                        text: TextSpan(
+                                          text: timeLeft,
+                                          style: heading,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               )
-                            ],
+                            : const SizedBox();
+                      },
+                    )
+                  ],
+                )
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: const TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: textLoading,
+                          style: TextStyle(
+                            color: kCyanColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
                           ),
                         ),
                       ],
-                    );
-                  },
-                ),
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: Row(
-                    children: [
-                      CupertinoButton(
-                        minSize: double.minPositive,
-                        padding: const EdgeInsets.all(5),
-                        child: const FaIcon(
-                          FontAwesomeIcons.plus,
-                          size: 30,
-                          color: kRedColor,
-                        ),
-                        onPressed: () async {
-                          final datePicked = await showDatePicker(
-                            context: context,
-                            initialDate: now,
-                            firstDate: now,
-                            lastDate: DateTime(
-                              now.year + 1,
-                              now.month,
-                              now.day,
-                            ),
-                          );
-                          if (datePicked != null) {
-                            final timePicked = await showTimePicker(
-                              context: context,
-                              initialTime:
-                                  const TimeOfDay(hour: 00, minute: 00),
-                            );
-                            if (timePicked != null) {
-                              DateTime newTime = DateTime(
-                                      datePicked.year,
-                                      datePicked.month,
-                                      datePicked.day,
-                                      timePicked.hour,
-                                      timePicked.minute)
-                                  .toUtc();
-                              datesRef.child('${dates.length}').set({
-                                'time': newTime.toIso8601String(),
-                                'started': false
-                              });
-                            }
-                          }
-                        },
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            )
-          : Column(
-              children: [
-                SizedBox(
-                  height: size.height * 0.5,
-                  child: nextRound == null
-                      ? SizedBox(
-                          // Game has ended
-                          child: isAlive
-                              ? SizedBox(
-                                  // Player is alive
-                                  child: Column(
-                                    children: [
-                                      RichText(
-                                        text: const TextSpan(
-                                            text: 'Congratulations you won!',
-                                            style: heading),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.4,
-                                        child: Image.asset(
-                                            'assets/images/thunderbirdCrosshair.png'),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : SizedBox(
-                                  // Player is dead,
-                                  child: Column(
-                                    children: [
-                                      RichText(
-                                        text: const TextSpan(
-                                            text: 'You have been eliminated',
-                                            style: heading),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.4,
-                                        child: Image.asset(
-                                            'assets/images/thunderbirdCrosshair.png'),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                        )
-                      : roundNumber == 0
-                          ? SizedBox(
-                              // Player is dead,
-                              child: Column(
-                                children: [
-                                  RichText(
-                                    text: const TextSpan(
-                                        text: 'You have been eliminated',
-                                        style: heading),
-                                  ),
-                                  SizedBox(
-                                    height: size.height * 0.4,
-                                    child: Image.asset(
-                                        'assets/images/thunderbirdCrosshair.png'),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : isAlive
-                              ? Align(
-                                  // Player is alive
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                        child: RichText(
-                                          text: TextSpan(
-                                              text: 'Round $roundNumber',
-                                              style: heading),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        child: RichText(
-                                          text: TextSpan(
-                                              text:
-                                                  'Current Target: $targetName',
-                                              style: redOptionText),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.4,
-                                        child: CachedNetworkImage(
-                                          imageUrl: usersSnapshot
-                                              .child(userSnapshot
-                                                  .child('target')
-                                                  .value
-                                                  .toString())
-                                              .child('photo_url')
-                                              .value as String,
-                                          placeholder: (context, url) =>
-                                              const CircularProgressIndicator(),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : SizedBox(
-                                  // Player is dead,
-                                  child: Column(
-                                    children: [
-                                      RichText(
-                                        text: const TextSpan(
-                                            text: 'You have been eliminated',
-                                            style: heading),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.4,
-                                        child: Image.asset(
-                                            'assets/images/thunderbirdCrosshair.png'),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                ),
-                StreamBuilder(
-                  stream: Stream.periodic(const Duration(seconds: 1), (i) => i),
-                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                    var timeLeft = getTimeLeft();
-                    return nextRound != null
-                        ? Container(
-                            padding: const EdgeInsets.all(8.0),
-                            alignment: Alignment.center,
-                            color: kDarkGreyColor,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  child: roundNumber == 0
-                                      ? RichText(
-                                          text: const TextSpan(
-                                            text: 'Time Until Start',
-                                            style: smallerHeading,
-                                          ),
-                                        )
-                                      : RichText(
-                                          text: const TextSpan(
-                                            text: 'Time Remaining In Round',
-                                            style: smallerHeading,
-                                          ),
-                                        ),
-                                ),
-                                SizedBox(
-                                  child: RichText(
-                                    text: TextSpan(
-                                      text: timeLeft,
-                                      style: heading,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : const SizedBox();
-                  },
-                )
-              ],
+                  const CircularProgressIndicator(
+                    color: kCyanColor,
+                  )
+                ],
+              ),
             ),
     );
   }
@@ -415,6 +454,7 @@ class _HomePageState extends State<HomePage> {
             List uuids = [];
             for (DataSnapshot user in usersSnapshot.children) {
               if (user.child('killed_this_round').value == false) {
+                print(user.child('name').value as String);
                 usersRef.child(user.key!).update({'alive': false});
               } else if (user.child('alive').value == true) {
                 uuids.add(user.key);
@@ -433,8 +473,13 @@ class _HomePageState extends State<HomePage> {
                   .child(uuids[i])
                   .update({'target': uuids[permutation[i]]});
             }
-            datesRef.child('${roundNumber - 1}').update({'started': true});
+            datesRef
+                .child(dates[roundNumber - 1].key!)
+                .update({'started': true});
             FirebaseDatabase.instance.ref('games/$game/started').set(true);
+            for (DataSnapshot user in usersSnapshot.children) {
+              usersRef.child(user.key!).update({'killed_this_round': false});
+            }
           }
           break;
         }
@@ -445,6 +490,9 @@ class _HomePageState extends State<HomePage> {
         .child('name')
         .value
         .toString();
+    setState(() {
+      loaded = true;
+    });
   }
 
   String getTimeLeft() {

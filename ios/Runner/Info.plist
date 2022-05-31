@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Hse Assassin</string>
+	<string>AP Assassin</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,11 +29,11 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Test</string>
+	<string>This will let you select photo and video from your gallery</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Test</string>
+	<string>This will let you capture photo and record video</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Test</string>
+	<string>This will let you capture audio</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

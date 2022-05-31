@@ -15,18 +15,13 @@ import 'package:hse_assassin/views/game_choice_view.dart';
 import 'package:hse_assassin/constants/routes.dart';
 import 'package:hse_assassin/constants/constants.dart';
 
-///
-///TODO: Write the rules
-///TODO: Figure out beta tester stuff
-///TODO: Do a massive shit ton of testing
-///TODO: Final style fixes
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     DismissKeyboard(
       child: MaterialApp(
         title: appTitle,
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.red,
         ),
@@ -58,20 +53,28 @@ class MyApp extends StatelessWidget {
           default:
             return Scaffold(
               body: Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: textLoading,
-                        style: TextStyle(
-                          color: kCyanColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                        ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: textLoading,
+                            style: TextStyle(
+                              color: kCyanColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const CircularProgressIndicator(
+                      color: kCyanColor,
+                    )
+                  ],
                 ),
               ),
               backgroundColor: kBlackColor,

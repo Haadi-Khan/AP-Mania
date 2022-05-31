@@ -13,7 +13,7 @@ class WelcomeView extends StatelessWidget {
     return Scaffold(
       backgroundColor: kBlackColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: statusBarColor,
+        value: statusBarColorMain,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -33,14 +33,12 @@ const kCyanColor = Color(0xff56b6c2);
 /*   Text Formatting Section   */
 
 // Status Bar Formatting
-const statusBarColor = SystemUiOverlayStyle(
-    statusBarColor: kBlackColor,
+const statusBarColorAlt = SystemUiOverlayStyle(
     statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.light);
-const statusBarColorScroll = SystemUiOverlayStyle(
-    statusBarColor: kBlackColor,
-    statusBarIconBrightness: Brightness.dark,
-    statusBarBrightness: Brightness.light);
+const statusBarColorMain = SystemUiOverlayStyle(
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark);
 
 // General Formatting
 const heading = TextStyle(

@@ -57,7 +57,7 @@ class _GameChoiceViewState extends State<GameChoiceView> {
     return Scaffold(
       backgroundColor: kBlackColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: statusBarColor,
+        value: statusBarColorMain,
         child: SafeArea(
           child: Stack(
             alignment: Alignment.center,
@@ -150,8 +150,15 @@ class _GameChoiceViewState extends State<GameChoiceView> {
                               style: generalText,
                               decoration: const InputDecoration(
                                 hintStyle: hintText,
-                                prefixIcon: Icon(Icons.search),
+                                prefixIcon:
+                                    Icon(Icons.search, color: kWhiteColor),
                                 hintText: textSearch,
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: kDarkGreyColor,
+                                      width: 1.0,
+                                      style: BorderStyle.none),
+                                ),
                               ),
                               keyboardAppearance: Brightness.dark),
                         ),

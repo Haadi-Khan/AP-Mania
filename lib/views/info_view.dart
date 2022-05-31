@@ -51,7 +51,7 @@ class _InfoViewState extends State<InfoView> {
       resizeToAvoidBottomInset: false,
       backgroundColor: kBlackColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: statusBarColor,
+        value: statusBarColorMain,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

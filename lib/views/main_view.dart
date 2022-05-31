@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +25,18 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   bool verified = false;
   Pages page = Pages.home;
+  late final StreamSubscription _verifiedSubscription;
 
   @override
   void initState() {
     loadVerified();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _verifiedSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -123,9 +132,10 @@ class _MainViewState extends State<MainView> {
 
     final verifiedRef =
         FirebaseDatabase.instance.ref('games/$game/users/$id/verified');
-    final verifiedEvent = await verifiedRef.once();
-    setState(() {
-      verified = verifiedEvent.snapshot.value as bool;
+    _verifiedSubscription = verifiedRef.onValue.listen((DatabaseEvent event) {
+      setState(() {
+        verified = event.snapshot.value as bool;
+      });
     });
   }
 }

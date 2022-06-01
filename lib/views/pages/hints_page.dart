@@ -4,11 +4,11 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/constants/constants.dart';
+import 'package:hse_assassin/util/google_drive.dart';
 import 'package:image_picker/image_picker.dart';
 
 class HintsPage extends StatefulWidget {
@@ -27,6 +27,7 @@ class _HintsPageState extends State<HintsPage> {
   final ImagePicker _picker = ImagePicker();
   File? image;
   bool loaded = false;
+  bool overFileSize = false;
 
   @override
   void initState() {
@@ -225,9 +226,19 @@ class _HintsPageState extends State<HintsPage> {
                                                           source: ImageSource
                                                               .gallery);
                                                   if (temp != null) {
-                                                    setState(() {
-                                                      image = File(temp.path);
-                                                    });
+                                                    final imageFile =
+                                                        File(temp.path);
+                                                    if (imageFile.lengthSync() <
+                                                        3000000) {
+                                                      setState(() {
+                                                        overFileSize = false;
+                                                        image = imageFile;
+                                                      });
+                                                    } else {
+                                                      setState(() {
+                                                        overFileSize = true;
+                                                      });
+                                                    }
                                                   }
                                                 },
                                                 style: ButtonStyle(
@@ -256,11 +267,29 @@ class _HintsPageState extends State<HintsPage> {
                                             SizedBox(
                                               height: size.height * 0.25,
                                               width: size.width * 0.8,
-                                              child: image == null
-                                                  ? null
-                                                  : Image.file(
-                                                      image!,
-                                                      fit: BoxFit.contain,
+                                              child: !overFileSize
+                                                  ? image == null
+                                                      ? null
+                                                      : Image.file(
+                                                          image!,
+                                                          fit: BoxFit.contain,
+                                                        )
+                                                  : Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: const [
+                                                        FaIcon(
+                                                            FontAwesomeIcons
+                                                                .circleExclamation,
+                                                            color:
+                                                                kOrangeColor),
+                                                        Text(
+                                                            'File size must be < 3 MB',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    kOrangeColor)),
+                                                      ],
                                                     ),
                                             ),
                                           ],
@@ -275,18 +304,9 @@ class _HintsPageState extends State<HintsPage> {
 
                                               String imageURL = '';
                                               if (image != null) {
-                                                final user = FirebaseAuth
-                                                    .instance.currentUser!;
-                                                final storageRef =
-                                                    FirebaseStorage.instance
-                                                        .ref();
-                                                final imagesRef =
-                                                    storageRef.child('images');
-                                                final imageRef =
-                                                    imagesRef.child(user.uid);
-                                                await imageRef.putFile(image!);
-                                                imageURL = await imageRef
-                                                    .getDownloadURL();
+                                                imageURL =
+                                                    await uploadFileToGoogleDrive(
+                                                        image!);
                                               }
 
                                               hintsRef

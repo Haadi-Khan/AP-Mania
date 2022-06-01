@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -10,6 +9,7 @@ import 'package:hse_assassin/constants/constants.dart';
 import 'package:hse_assassin/constants/routes.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hse_assassin/util/google_drive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:developer' as devtools show log;
 
@@ -50,11 +50,22 @@ class _InfoViewState extends State<InfoView> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: kBlackColor,
+      appBar: AppBar(
+        backgroundColor: kBlackColor,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
+            loginRoute,
+            (_) => false,
+          ),
+        ),
+      ),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: statusBarColorMain,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            SizedBox(height: size.height * 0.05),
             RichText(
               textAlign: TextAlign.center,
               text: const TextSpan(
@@ -135,9 +146,17 @@ class _InfoViewState extends State<InfoView> {
                       var temp =
                           await _picker.pickImage(source: ImageSource.gallery);
                       if (temp != null) {
-                        setState(() {
-                          image = File(temp.path);
-                        });
+                        final imageFile = File(temp.path);
+                        if (imageFile.lengthSync() < 3000000) {
+                          setState(() {
+                            image = imageFile;
+                            errorMessage = null;
+                          });
+                        } else {
+                          setState(() {
+                            errorMessage = '  File size must be < 3MB';
+                          });
+                        }
                       }
                     },
                     style: ButtonStyle(
@@ -163,9 +182,17 @@ class _InfoViewState extends State<InfoView> {
                       var temp =
                           await _picker.pickImage(source: ImageSource.camera);
                       if (temp != null) {
-                        setState(() {
-                          image = File(temp.path);
-                        });
+                        final imageFile = File(temp.path);
+                        if (imageFile.lengthSync() < 3000000) {
+                          setState(() {
+                            image = imageFile;
+                            errorMessage = null;
+                          });
+                        } else {
+                          setState(() {
+                            errorMessage = '  File size must be < 3MB';
+                          });
+                        }
                       }
                     },
                     style: ButtonStyle(
@@ -222,13 +249,15 @@ class _InfoViewState extends State<InfoView> {
                       errorMessage = textErrorMissingFields;
                       devtools.log(errorMessage!);
                     });
+                  } else if (phoneNumber.length < 10) {
+                    setState(() {
+                      errorMessage = '  Invalid phone number';
+                      devtools.log(errorMessage!);
+                    });
                   } else {
                     final user = FirebaseAuth.instance.currentUser!;
-                    final storageRef = FirebaseStorage.instance.ref();
-                    final imagesRef = storageRef.child('images');
-                    final imageRef = imagesRef.child(user.uid);
-                    await imageRef.putFile(image!);
-                    final imageURL = await imageRef.getDownloadURL();
+
+                    final imageURL = await uploadFileToGoogleDrive(image!);
 
                     final databaseRef = FirebaseDatabase.instance.ref();
                     final usersRef = databaseRef.child('users');

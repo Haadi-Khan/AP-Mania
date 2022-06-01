@@ -3,16 +3,15 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/constants/constants.dart';
+import 'package:hse_assassin/util/google_drive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class KillsPage extends StatefulWidget {
@@ -34,6 +33,7 @@ class _KillsPageState extends State<KillsPage> {
   Directory? tempDir;
   bool isAlive = false;
   bool loaded = false;
+  bool overFileSize = false;
 
   // Video Uploading
   final ImagePicker _picker = ImagePicker();
@@ -62,98 +62,206 @@ class _KillsPageState extends State<KillsPage> {
               Column(
                 children: [
                   SizedBox(
-                    height: size.height * 0.5,
+                    height: size.height * 0.8,
                     child: ListView.builder(
                       itemCount: kills.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return SizedBox(
-                          height: size.height * 0.03,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    backgroundColor: kBlackColor,
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(
-                                          20.0,
+                        return Stack(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        backgroundColor: kBlackColor,
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(
+                                              20.0,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    contentPadding: const EdgeInsets.only(
-                                      top: 10.0,
-                                    ),
-                                    title: const Text(
-                                      "ELIMINATION",
-                                      style: popupTitle,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    content:
-                                        kills[index].child("video_url").value !=
-                                                null
-                                            ? SizedBox(
-                                                height: size.height * 0.4,
-                                                child: Center(
-                                                  child: VideoDialog(
-                                                      url: kills[index]
+                                        contentPadding: const EdgeInsets.only(
+                                          top: 10.0,
+                                        ),
+                                        title: const Text(
+                                          "ELIMINATION",
+                                          style: popupTitle,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        content: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Column(
+                                            children: [
+                                              kills[index]
                                                           .child("video_url")
-                                                          .value as String),
-                                                ),
-                                              )
-                                            : SizedBox(
-                                                height: size.height * 0.4,
-                                                child: const Center(
+                                                          .value !=
+                                                      null
+                                                  ? SizedBox(
+                                                      height: size.height * 0.4,
+                                                      child: Center(
+                                                        child: VideoDialog(
+                                                            url: kills[index]
+                                                                .child(
+                                                                    "video_url")
+                                                                .value as String),
+                                                      ),
+                                                    )
+                                                  : SizedBox(
+                                                      height: size.height * 0.4,
+                                                      child: const Center(
+                                                        child: Text(
+                                                          'No Video Provided',
+                                                          style: generalText,
+                                                        ),
+                                                      ),
+                                                    ),
+                                              SizedBox(
+                                                height: size.height * 0.05,
+                                                child: Center(
                                                   child: Text(
-                                                    'No Video Provided',
+                                                    DateTime.parse(kills[index]
+                                                            .child("time")
+                                                            .value as String)
+                                                        .toString()
+                                                        .substring(0, 16),
                                                     style: generalText,
                                                   ),
                                                 ),
                                               ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                            style: rectButton,
-                            child: RichText(
-                              textAlign: TextAlign.left,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: usersSnapshot
-                                        .child(kills[index]
-                                            .child("killer")
-                                            .value as String)
-                                        .child('name')
-                                        .value as String,
-                                    style: buttonInfo,
-                                  ),
-                                  WidgetSpan(
-                                    child: SizedBox(width: size.width * 0.03),
-                                  ),
-                                  const WidgetSpan(
-                                    child: FaIcon(
-                                      FontAwesomeIcons.personRifle,
-                                      size: 20,
+                                style: ButtonStyle(
+                                    shape: MaterialStateProperty.all<
+                                        OutlinedBorder>(
+                                      const BeveledRectangleBorder(),
                                     ),
-                                  ),
-                                  WidgetSpan(
-                                    child: SizedBox(width: size.width * 0.03),
-                                  ),
-                                  TextSpan(
-                                    text: usersSnapshot
-                                        .child(kills[index]
-                                            .child("killed")
-                                            .value as String)
-                                        .child('name')
-                                        .value as String,
-                                    style: buttonInfo,
-                                  ),
-                                ],
+                                    padding: MaterialStateProperty.all(
+                                        const EdgeInsets.all(0)),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            kWhiteColor),
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            kDarkGreyColor),
+                                    side: MaterialStateProperty.all<BorderSide>(
+                                        BorderSide.none)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: size.width * 0.4,
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          usersSnapshot
+                                              .child(kills[index]
+                                                  .child("killer")
+                                                  .value as String)
+                                              .child('name')
+                                              .value as String,
+                                          style: const TextStyle(
+                                              color: kBlueColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: size.width * 0.03),
+                                    const FaIcon(
+                                      FontAwesomeIcons.gun,
+                                      size: 17,
+                                    ),
+                                    SizedBox(width: size.width * 0.03),
+                                    SizedBox(
+                                      width: size.width * 0.4,
+                                      child: Text(
+                                        usersSnapshot
+                                            .child(kills[index]
+                                                .child("killed")
+                                                .value as String)
+                                            .child('name')
+                                            .value as String,
+                                        style: const TextStyle(
+                                            color: kRedColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
+                            Visibility(
+                              visible: adminMode,
+                              child: Positioned(
+                                top: 0,
+                                right: 0,
+                                child: CupertinoButton(
+                                  minSize: double.minPositive,
+                                  padding: const EdgeInsets.all(5),
+                                  child: const FaIcon(
+                                    FontAwesomeIcons.trash,
+                                    size: 15,
+                                    color: kRedColor,
+                                  ),
+                                  onPressed: () async {
+                                    DatabaseReference killerRef =
+                                        usersRef.child(kills[index]
+                                            .child('killer')
+                                            .value! as String);
+                                    DatabaseReference killedRef =
+                                        usersRef.child(kills[index]
+                                            .child('killed')
+                                            .value! as String);
+                                    final killer = await killerRef.once();
+                                    final numKills = killer.snapshot
+                                        .child('kills')
+                                        .value as int;
+                                    await killerRef.update(
+                                      {
+                                        'kills': numKills - 1,
+                                        'killed_this_round': false,
+                                        'target':
+                                            kills[index].child('killed').value!
+                                      },
+                                    );
+                                    await killedRef.update(
+                                      {
+                                        'alive': true,
+                                      },
+                                    );
+                                    for (int i = index;
+                                        i < kills.length - 1;
+                                        i++) {
+                                      killsRef.child('$i').update({
+                                        'killer':
+                                            kills[i + 1].child('killer').value!,
+                                        'killed':
+                                            kills[i + 1].child('killed').value!,
+                                        'video_url': kills[i + 1]
+                                            .child('video_url')
+                                            .value,
+                                        'time':
+                                            kills[i + 1].child('time').value!
+                                      });
+                                    }
+                                    killsRef
+                                        .child('${kills.length - 1}')
+                                        .remove();
+                                  },
+                                ),
+                              ),
+                            )
+                          ],
                         );
                       },
                     ),
@@ -210,24 +318,35 @@ class _KillsPageState extends State<KillsPage> {
                                                             source: ImageSource
                                                                 .gallery);
                                                     if (temp != null) {
-                                                      setState(() {
-                                                        video = File(temp.path);
-                                                      });
-                                                      var thumbnailTemp =
-                                                          await VideoThumbnail
-                                                              .thumbnailFile(
-                                                        video: video!.path,
-                                                        thumbnailPath:
-                                                            tempDir!.path,
-                                                        imageFormat:
-                                                            ImageFormat.PNG,
-                                                        maxHeight: 100,
-                                                        quality: 75,
-                                                      );
-                                                      setState(() {
-                                                        thumbnail =
-                                                            thumbnailTemp;
-                                                      });
+                                                      final videoFile =
+                                                          File(temp.path);
+                                                      if (videoFile
+                                                              .lengthSync() <
+                                                          200000000) {
+                                                        setState(() {
+                                                          overFileSize = false;
+                                                          video = videoFile;
+                                                        });
+                                                        var thumbnailTemp =
+                                                            await VideoThumbnail
+                                                                .thumbnailFile(
+                                                          video: video!.path,
+                                                          thumbnailPath:
+                                                              tempDir!.path,
+                                                          imageFormat:
+                                                              ImageFormat.PNG,
+                                                          maxHeight: 100,
+                                                          quality: 75,
+                                                        );
+                                                        setState(() {
+                                                          thumbnail =
+                                                              thumbnailTemp;
+                                                        });
+                                                      } else {
+                                                        setState(() {
+                                                          overFileSize = true;
+                                                        });
+                                                      }
                                                     }
                                                   },
                                                   style: ButtonStyle(
@@ -259,11 +378,29 @@ class _KillsPageState extends State<KillsPage> {
                                               SizedBox(
                                                 height: size.height * 0.25,
                                                 width: size.width * 0.8,
-                                                child: thumbnail == null
-                                                    ? null
-                                                    : Image.file(
-                                                        File(thumbnail!),
-                                                        fit: BoxFit.cover),
+                                                child: !overFileSize
+                                                    ? thumbnail == null
+                                                        ? null
+                                                        : Image.file(
+                                                            File(thumbnail!),
+                                                            fit: BoxFit.cover)
+                                                    : Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: const [
+                                                          FaIcon(
+                                                              FontAwesomeIcons
+                                                                  .circleExclamation,
+                                                              color:
+                                                                  kOrangeColor),
+                                                          Text(
+                                                              'File size must be < 200 MB',
+                                                              style: TextStyle(
+                                                                  color:
+                                                                      kOrangeColor)),
+                                                        ],
+                                                      ),
                                               ),
                                             ],
                                           ),
@@ -278,17 +415,9 @@ class _KillsPageState extends State<KillsPage> {
                                                 String? videoURL;
 
                                                 if (video != null) {
-                                                  final storageRef =
-                                                      FirebaseStorage.instance
-                                                          .ref();
-                                                  final videosRef = storageRef
-                                                      .child('videos');
-                                                  final videoRef = videosRef
-                                                      .child(const Uuid().v4());
-                                                  await videoRef
-                                                      .putFile(video!);
-                                                  videoURL = await videoRef
-                                                      .getDownloadURL();
+                                                  videoURL =
+                                                      await uploadFileToGoogleDrive(
+                                                          video!);
                                                 }
 
                                                 final target = userSnapshot

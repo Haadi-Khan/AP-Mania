@@ -277,20 +277,51 @@ class _PeoplePageState extends State<PeoplePage> {
                                           ),
                                         ),
                                         SizedBox(
-                                          height: size.height * 0.05,
+                                          height: size.height * 0.07,
                                           child: Center(
                                             child: showType != ShowTypes.admin
-                                                ? Text(
-                                                    'Kills: ${showPeople[index].child('kills').value as int}',
-                                                    style: popupText,
-                                                    textAlign: TextAlign.left,
+                                                ? Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        'Kills: ${showPeople[index].child('kills').value as int}',
+                                                        style: popupText,
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                      ),
+                                                      adminMode
+                                                          ? Text(
+                                                              showPeople[index]
+                                                                      .child(
+                                                                          'phone')
+                                                                      .value!
+                                                                  as String,
+                                                              style: popupText,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .left,
+                                                            )
+                                                          : const SizedBox(),
+                                                    ],
                                                   )
-                                                : const Text(
-                                                    'Coordinator',
-                                                    style: popupText,
+                                                : Column(
+                                                    children: [
+                                                      const Text(
+                                                        'Coordinator',
+                                                        style: popupText,
+                                                      ),
+                                                      Text(
+                                                        showPeople[index]
+                                                            .child('phone')
+                                                            .value! as String,
+                                                        style: popupText,
+                                                      ),
+                                                    ],
                                                   ),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     Positioned(

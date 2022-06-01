@@ -204,129 +204,147 @@ class _HomePageState extends State<HomePage> {
                   ],
                 )
               : Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: size.height * 0.5,
-                      child: nextRound == null
-                          ? SizedBox(
-                              // Game has ended
-                              child: isAlive
-                                  ? SizedBox(
-                                      // Player is alive
-                                      child: Column(
-                                        children: [
-                                          RichText(
+                    Center(
+                      child: SizedBox(
+                        width: size.width * 0.9,
+                        height: size.height * 0.5,
+                        child: nextRound == null
+                            ? SizedBox(
+                                // Game has ended
+                                child: isAlive
+                                    ? SizedBox(
+                                        // Player is alive
+                                        child: Column(
+                                          children: [
+                                            FittedBox(
+                                              child: RichText(
+                                                text: const TextSpan(
+                                                    text:
+                                                        'Congratulations you won!',
+                                                    style: heading),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: size.height * 0.4,
+                                              child: Image.asset(
+                                                  'assets/images/thunderbirdCrosshair.png'),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        // Player is dead,
+                                        child: Column(
+                                          children: [
+                                            FittedBox(
+                                              child: RichText(
+                                                text: const TextSpan(
+                                                    text:
+                                                        'You have been eliminated',
+                                                    style: heading),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: size.height * 0.4,
+                                              child: Image.asset(
+                                                  'assets/images/thunderbirdCrosshair.png'),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                              )
+                            : roundNumber == 0
+                                ? SizedBox(
+                                    // Player is dead,
+                                    child: Column(
+                                      children: [
+                                        FittedBox(
+                                          child: RichText(
                                             text: const TextSpan(
                                                 text:
-                                                    'Congratulations you won!',
+                                                    'Wait for the game to begin',
                                                 style: heading),
                                           ),
-                                          SizedBox(
-                                            height: size.height * 0.4,
-                                            child: Image.asset(
-                                                'assets/images/thunderbirdCrosshair.png'),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      // Player is dead,
-                                      child: Column(
-                                        children: [
-                                          RichText(
-                                            text: const TextSpan(
-                                                text:
-                                                    'You have been eliminated',
-                                                style: heading),
-                                          ),
-                                          SizedBox(
-                                            height: size.height * 0.4,
-                                            child: Image.asset(
-                                                'assets/images/thunderbirdCrosshair.png'),
-                                          ),
-                                        ],
-                                      ),
+                                        ),
+                                        SizedBox(
+                                          height: size.height * 0.4,
+                                          child: Image.asset(
+                                              'assets/images/thunderbirdCrosshair.png'),
+                                        ),
+                                      ],
                                     ),
-                            )
-                          : roundNumber == 0
-                              ? SizedBox(
-                                  // Player is dead,
-                                  child: Column(
-                                    children: [
-                                      RichText(
-                                        text: const TextSpan(
-                                            text: 'You have been eliminated',
-                                            style: heading),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.4,
-                                        child: Image.asset(
-                                            'assets/images/thunderbirdCrosshair.png'),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : isAlive
-                                  ? Align(
-                                      // Player is alive
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            child: RichText(
-                                              text: TextSpan(
-                                                  text: 'Round $roundNumber',
-                                                  style: heading),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            child: RichText(
-                                              text: TextSpan(
-                                                  text:
-                                                      'Current Target: $targetName',
-                                                  style: redOptionText),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: size.height * 0.4,
-                                            child: CachedNetworkImage(
-                                              imageUrl: usersSnapshot
-                                                  .child(userSnapshot
-                                                      .child('target')
-                                                      .value
-                                                      .toString())
-                                                  .child('photo_url')
-                                                  .value as String,
-                                              placeholder: (context, url) =>
-                                                  const Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  color: kCyanColor,
+                                  )
+                                : isAlive
+                                    ? Align(
+                                        // Player is alive
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          children: [
+                                            SizedBox(
+                                              child: FittedBox(
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                      text:
+                                                          'Round $roundNumber',
+                                                      style: heading),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                            SizedBox(
+                                              child: FittedBox(
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                      text:
+                                                          'Current Target: $targetName',
+                                                      style: redOptionText),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: size.height * 0.4,
+                                              child: CachedNetworkImage(
+                                                imageUrl: usersSnapshot
+                                                    .child(userSnapshot
+                                                        .child('target')
+                                                        .value
+                                                        .toString())
+                                                    .child('photo_url')
+                                                    .value as String,
+                                                placeholder: (context, url) =>
+                                                    const Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: kCyanColor,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        // Player is dead,
+                                        child: Column(
+                                          children: [
+                                            FittedBox(
+                                              child: RichText(
+                                                text: const TextSpan(
+                                                    text:
+                                                        'You have been eliminated',
+                                                    style: heading),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: size.height * 0.4,
+                                              child: Image.asset(
+                                                  'assets/images/thunderbirdCrosshair.png'),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    )
-                                  : SizedBox(
-                                      // Player is dead,
-                                      child: Column(
-                                        children: [
-                                          RichText(
-                                            text: const TextSpan(
-                                                text:
-                                                    'You have been eliminated',
-                                                style: heading),
-                                          ),
-                                          SizedBox(
-                                            height: size.height * 0.4,
-                                            child: Image.asset(
-                                                'assets/images/thunderbirdCrosshair.png'),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                      ),
                     ),
                     StreamBuilder(
                       stream:
@@ -454,7 +472,6 @@ class _HomePageState extends State<HomePage> {
             List uuids = [];
             for (DataSnapshot user in usersSnapshot.children) {
               if (user.child('killed_this_round').value == false) {
-                print(user.child('name').value as String);
                 usersRef.child(user.key!).update({'alive': false});
               } else if (user.child('alive').value == true) {
                 uuids.add(user.key);
@@ -582,7 +599,7 @@ AppBar homeBar(BuildContext context, State state) {
             ),
           ];
         },
-      )
+      ),
     ],
   );
 }

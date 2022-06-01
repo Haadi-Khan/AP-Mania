@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// import 'package:hse_assassin/views/testview.dart';
 
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,7 @@ void main() {
         theme: ThemeData(
           primarySwatch: Colors.red,
         ),
-        home: const MyApp(),
+        home: const MyApp(), // const TestView(),
         routes: {
           welcomeRoute: (context) => const WelcomeView(),
           loginRoute: (context) => const LoginView(),

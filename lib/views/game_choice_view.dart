@@ -56,6 +56,16 @@ class _GameChoiceViewState extends State<GameChoiceView> {
         borderSide: BorderSide(color: kGreyColor, width: 3.0));
     return Scaffold(
       backgroundColor: kBlackColor,
+      appBar: AppBar(
+        backgroundColor: kBlackColor,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
+            loginRoute,
+            (_) => false,
+          ),
+        ),
+      ),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: statusBarColorMain,
         child: SafeArea(

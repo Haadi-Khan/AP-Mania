@@ -9,7 +9,7 @@ import firebase_analytics
 import firebase_auth
 import firebase_core
 import firebase_database
-import path_provider_macos
+import path_provider_foundation
 import sqflite
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {

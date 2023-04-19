@@ -1,3 +1,7 @@
+# PROTECT FIREBASE DATA
+lib/firebase_options.dart
+
+
 # Miscellaneous
 *.class
 *.log

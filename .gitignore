@@ -1,5 +1,6 @@
 # PROTECT FIREBASE DATA
-lib/firebase_options.dart
+lib/util/firebase_options.dart
+lib/util/google_drive.dart
 
 
 # Miscellaneous

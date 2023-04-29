@@ -54,10 +54,7 @@ class _LoginViewState extends AssassinState<LoginView> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: size.height * 0.2,
-                    child: Image.asset('assets/images/thunderbird.png'),
-                  ),
+                  super.thunderbird_icon(context,size),
                   RichText(
                     textAlign: TextAlign.center,
                     text: const TextSpan(

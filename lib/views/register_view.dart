@@ -10,14 +10,16 @@ import 'package:hse_assassin/constants/routes.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
+
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  AssassinState<RegisterView> createState() => _RegisterViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
+class _RegisterViewState extends AssassinState<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
   late final TextEditingController _confirmPass;

@@ -8,20 +8,23 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/constants/constants.dart';
 import 'package:hse_assassin/util/google_drive.dart';
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:video_thumbnail/video_thumbnail.dart';
 
+/// This page shows the live kill feed. Admins are able to remove kills from the feed. Users
+/// upload their kills to the feed.
 class KillsPage extends StatefulWidget {
   const KillsPage({Key? key}) : super(key: key);
 
   @override
-  State<KillsPage> createState() => _KillsPageState();
+  AssassinState<KillsPage> createState() => _KillsPageState();
 }
 
-class _KillsPageState extends State<KillsPage> {
+class _KillsPageState extends AssassinState<KillsPage> {
   bool adminMode = false;
   List<DataSnapshot> kills = [];
   late final StreamSubscription _killSubscription;
@@ -481,31 +484,7 @@ class _KillsPageState extends State<KillsPage> {
               ),
             ],
           )
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: textLoading,
-                        style: TextStyle(
-                          color: kCyanColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const CircularProgressIndicator(
-                  color: kCyanColor,
-                )
-              ],
-            ),
-          );
+        : super.loading_menu(context);
   }
 
   loadKills() async {

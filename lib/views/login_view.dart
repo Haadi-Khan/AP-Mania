@@ -10,14 +10,16 @@ import 'package:hse_assassin/constants/routes.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  AssassinState<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _LoginViewState extends AssassinState<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
   bool isPassObscure = true;

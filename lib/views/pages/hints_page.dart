@@ -9,16 +9,19 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/constants/constants.dart';
 import 'package:hse_assassin/util/google_drive.dart';
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 import 'package:image_picker/image_picker.dart';
+
+/// This page shows the hints for the game. Only admins can publish new hints. Participants see hints
 
 class HintsPage extends StatefulWidget {
   const HintsPage({Key? key}) : super(key: key);
 
   @override
-  State<HintsPage> createState() => _HintsPageState();
+  AssassinState<HintsPage> createState() => _HintsPageState();
 }
 
-class _HintsPageState extends State<HintsPage> {
+class _HintsPageState extends AssassinState<HintsPage> {
   late final TextEditingController _hintBody;
   List<DataSnapshot> hints = [];
   late final StreamSubscription _hintSubscription;
@@ -334,33 +337,10 @@ class _HintsPageState extends State<HintsPage> {
               ),
             ],
           )
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: textLoading,
-                        style: TextStyle(
-                          color: kCyanColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const CircularProgressIndicator(
-                  color: kCyanColor,
-                )
-              ],
-            ),
-          );
+        : super.loading_menu(context);
   }
 
+  /// fetch hints from firebase, and display the data
   loadHints() async {
     String id = FirebaseAuth.instance.currentUser!.uid;
     final gameEvent =

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/constants/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
 enum ShowTypes { alive, all, admin, unverified }
 
@@ -14,14 +15,19 @@ enum SortTypes { aToZ, zToA, mostKills }
 
 enum AdminSortTypes { aToZ, zToA, mostKills, unverified }
 
+/// This page displays all the players in the game.
+/// There are a variety of views:
+/// - Users can see remaining players, all players, and coordinators
+/// - Admins can see remaining players, all players, coordinators, and unverified players
+
 class PeoplePage extends StatefulWidget {
   const PeoplePage({Key? key}) : super(key: key);
 
   @override
-  State<PeoplePage> createState() => _PeoplePageState();
+  AssassinState<PeoplePage> createState() => _PeoplePageState();
 }
 
-class _PeoplePageState extends State<PeoplePage> {
+class _PeoplePageState extends AssassinState<PeoplePage> {
   List<DataSnapshot> people = [];
   List<DataSnapshot> showPeople = [];
   late final StreamSubscription _testSubscription;
@@ -460,31 +466,7 @@ class _PeoplePageState extends State<PeoplePage> {
               ),
             ],
           )
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: textLoading,
-                        style: TextStyle(
-                          color: kCyanColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const CircularProgressIndicator(
-                  color: kCyanColor,
-                )
-              ],
-            ),
-          );
+        : super.loading_menu(context);
   }
 
   loadPeople() async {

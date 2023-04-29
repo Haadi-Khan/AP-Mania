@@ -10,6 +10,7 @@ import 'package:hse_assassin/constants/routes.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/util/google_drive.dart';
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:developer' as devtools show log;
 
@@ -17,10 +18,10 @@ class InfoView extends StatefulWidget {
   const InfoView({Key? key}) : super(key: key);
 
   @override
-  State<InfoView> createState() => _InfoViewState();
+  AssassinState<InfoView> createState() => _InfoViewState();
 }
 
-class _InfoViewState extends State<InfoView> {
+class _InfoViewState extends AssassinState<InfoView> {
   late final TextEditingController _fullName;
   late final TextEditingController _phoneNumber;
 

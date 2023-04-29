@@ -10,17 +10,24 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/constants/constants.dart';
 import 'package:hse_assassin/constants/routes.dart';
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
 enum MenuAction { logout }
 
-class HomePage extends StatefulWidget {
+///This displays the home page of the app.
+/// If a user is not verified, they are shown the [VerifyPage].
+/// If a user is verified, they are shown the [HomePage].
+///  - If the user is an admin, they are shown the admin view.
+/// - If the user is not an admin, they are shown the time remaining for the next round w/ their target
+
+class HomePage extends StatefulWidget{
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  AssassinState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends AssassinState<HomePage> {
   List<DataSnapshot> dates = [];
   late final StreamSubscription _testSubscription;
   bool adminMode = false;
@@ -390,31 +397,7 @@ class _HomePageState extends State<HomePage> {
                     )
                   ],
                 )
-          : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: const TextSpan(
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: textLoading,
-                          style: TextStyle(
-                            color: kCyanColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const CircularProgressIndicator(
-                    color: kCyanColor,
-                  )
-                ],
-              ),
-            ),
+          : super.loading_menu(context),
     );
   }
 
@@ -528,6 +511,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 }
+
 
 int getMinCycleLength(List perms) {
   List<int> cycles = [];

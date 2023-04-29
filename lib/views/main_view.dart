@@ -12,17 +12,21 @@ import 'package:hse_assassin/views/pages/people_page.dart';
 import 'package:hse_assassin/views/pages/rules_page.dart';
 import 'package:hse_assassin/views/pages/hints_page.dart';
 import 'package:hse_assassin/views/pages/verify_page.dart';
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
 enum Pages { rules, hints, home, people, kills }
 
+/// Home screen of the app after registering
+/// Bottom bar contains 5 elements: rules, hints, homes, people, kills
+/// Each element is a page
 class MainView extends StatefulWidget {
   const MainView({Key? key}) : super(key: key);
 
   @override
-  State<MainView> createState() => _MainViewState();
+  AssassinState<MainView> createState() => _MainViewState();
 }
 
-class _MainViewState extends State<MainView> {
+class _MainViewState extends AssassinState<MainView> {
   bool verified = false;
   Pages page = Pages.home;
   late final StreamSubscription _verifiedSubscription;
@@ -140,6 +144,7 @@ class _MainViewState extends State<MainView> {
   }
 }
 
+/// Returns the app bar for the page
 AppBar getAppBar(Pages page, BuildContext context, State state) {
   switch (page) {
     case Pages.hints:
@@ -155,6 +160,7 @@ AppBar getAppBar(Pages page, BuildContext context, State state) {
   }
 }
 
+/// 
 Widget getPage(Pages page, bool verified) {
   if (verified) {
     switch (page) {

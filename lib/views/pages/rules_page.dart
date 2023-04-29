@@ -8,15 +8,17 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:hse_assassin/constants/constants.dart';
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
+/// This page displays the rules of the game.
 class RulesPage extends StatefulWidget {
   const RulesPage({Key? key}) : super(key: key);
 
   @override
-  State<RulesPage> createState() => _RulesPageState();
+  AssassinState<RulesPage> createState() => _RulesPageState();
 }
 
-class _RulesPageState extends State<RulesPage> {
+class _RulesPageState extends AssassinState<RulesPage> {
   late final TextEditingController _ruleTitle;
   late final TextEditingController _ruleBody;
 
@@ -446,31 +448,7 @@ class _RulesPageState extends State<RulesPage> {
                 ),
               ],
             )
-          : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: const TextSpan(
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: textLoading,
-                          style: TextStyle(
-                            color: kCyanColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const CircularProgressIndicator(
-                    color: kCyanColor,
-                  )
-                ],
-              ),
-            ),
+          : super.loading_menu(context),
     );
   }
 

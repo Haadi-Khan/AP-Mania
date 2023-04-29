@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:hse_assassin/constants/constants.dart';
 
+/// This page is shown when the user is not verified.
 class VerifyPage extends StatelessWidget {
   const VerifyPage({Key? key}) : super(key: key);
 

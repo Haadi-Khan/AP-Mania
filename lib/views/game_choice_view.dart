@@ -5,17 +5,22 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/constants/constants.dart';
 import 'package:hse_assassin/constants/routes.dart';
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
 enum MenuAction { logout }
+
+/// Prompts user to join a game
+/// If user is admin, they can create a new game
+/// If user is player, they can join an existing game
 
 class GameChoiceView extends StatefulWidget {
   const GameChoiceView({Key? key}) : super(key: key);
 
   @override
-  State<GameChoiceView> createState() => _GameChoiceViewState();
+  AssassinState<GameChoiceView> createState() => _GameChoiceViewState();
 }
 
-class _GameChoiceViewState extends State<GameChoiceView> {
+class _GameChoiceViewState extends AssassinState<GameChoiceView> {
   late final TextEditingController _gameSearch;
   late final TextEditingController _newGameName;
   List<String>? games;

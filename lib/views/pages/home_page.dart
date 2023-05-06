@@ -19,8 +19,7 @@ enum MenuAction { logout }
 /// If a user is verified, they are shown the [HomePage].
 ///  - If the user is an admin, they are shown the admin view.
 /// - If the user is not an admin, they are shown the time remaining for the next round w/ their target
-
-class HomePage extends StatefulWidget{
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -62,341 +61,17 @@ class _HomePageState extends AssassinState<HomePage> {
       value: statusBarColorMain,
       child: loaded
           ? adminMode
-              ? Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    ListView.builder(
-                      itemCount: dates.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Stack(
-                          children: [
-                            SizedBox(
-                              height: size.height * 0.03,
-                              child: Text(
-                                DateTime.parse(dates[index].child('time').value
-                                        as String)
-                                    .toLocal()
-                                    .toIso8601String()
-                                    .replaceAll('T', ' '),
-                                style: buttonInfo,
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 5,
-                              right: 10,
-                              child: Row(
-                                children: [
-                                  CupertinoButton(
-                                    minSize: double.minPositive,
-                                    padding: const EdgeInsets.all(5),
-                                    child: const FaIcon(
-                                      FontAwesomeIcons.pen,
-                                      size: 15,
-                                      color: kWhiteColor,
-                                    ),
-                                    onPressed: () async {
-                                      final datePicked = await showDatePicker(
-                                        context: context,
-                                        initialDate: now,
-                                        firstDate: now,
-                                        lastDate: DateTime(
-                                          now.year + 1,
-                                          now.month,
-                                          now.day,
-                                        ),
-                                      );
-                                      if (datePicked != null) {
-                                        final timePicked = await showTimePicker(
-                                          context: context,
-                                          initialTime: const TimeOfDay(
-                                              hour: 00, minute: 00),
-                                        );
-                                        if (timePicked != null) {
-                                          DateTime newTime = DateTime(
-                                                  datePicked.year,
-                                                  datePicked.month,
-                                                  datePicked.day,
-                                                  timePicked.hour,
-                                                  timePicked.minute)
-                                              .toUtc();
-                                          datesRef.child('$index').update({
-                                            'time': newTime.toIso8601String(),
-                                            'started': false
-                                          });
-                                        }
-                                      }
-                                    },
-                                  ),
-                                  CupertinoButton(
-                                    minSize: double.minPositive,
-                                    padding: const EdgeInsets.all(5),
-                                    child: const FaIcon(
-                                      FontAwesomeIcons.trash,
-                                      size: 15,
-                                      color: kRedColor,
-                                    ),
-                                    onPressed: () {
-                                      for (int i = index;
-                                          i < dates.length - 1;
-                                          i++) {
-                                        datesRef.child('$i').set({
-                                          'time':
-                                              dates[i + 1].child('time').value!,
-                                          'started': dates[i + 1]
-                                              .child('started')
-                                              .value!
-                                        });
-                                      }
-                                      datesRef
-                                          .child('${dates.length - 1}')
-                                          .remove();
-                                    },
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: Row(
-                        children: [
-                          CupertinoButton(
-                            minSize: double.minPositive,
-                            padding: const EdgeInsets.all(5),
-                            child: const FaIcon(
-                              FontAwesomeIcons.plus,
-                              size: 30,
-                              color: kRedColor,
-                            ),
-                            onPressed: () async {
-                              final datePicked = await showDatePicker(
-                                context: context,
-                                initialDate: now,
-                                firstDate: now,
-                                lastDate: DateTime(
-                                  now.year + 1,
-                                  now.month,
-                                  now.day,
-                                ),
-                              );
-                              if (datePicked != null) {
-                                final timePicked = await showTimePicker(
-                                  context: context,
-                                  initialTime:
-                                      const TimeOfDay(hour: 00, minute: 00),
-                                );
-                                if (timePicked != null) {
-                                  DateTime newTime = DateTime(
-                                          datePicked.year,
-                                          datePicked.month,
-                                          datePicked.day,
-                                          timePicked.hour,
-                                          timePicked.minute)
-                                      .toUtc();
-                                  datesRef.child('${dates.length}').set({
-                                    'time': newTime.toIso8601String(),
-                                    'started': false
-                                  });
-                                }
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: SizedBox(
-                        width: size.width * 0.9,
-                        height: size.height * 0.5,
-                        child: nextRound == null
-                            ? SizedBox(
-                                // Game has ended
-                                child: isAlive
-                                    ? SizedBox(
-                                        // Player is alive
-                                        child: Column(
-                                          children: [
-                                            FittedBox(
-                                              child: RichText(
-                                                text: const TextSpan(
-                                                    text:
-                                                        'Congratulations you won!',
-                                                    style: heading),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: size.height * 0.4,
-                                              child: Image.asset(
-                                                  'assets/images/thunderbirdCrosshair.png'),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    : SizedBox(
-                                        // Player is dead,
-                                        child: Column(
-                                          children: [
-                                            FittedBox(
-                                              child: RichText(
-                                                text: const TextSpan(
-                                                    text:
-                                                        'You have been eliminated',
-                                                    style: heading),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: size.height * 0.4,
-                                              child: Image.asset(
-                                                  'assets/images/thunderbirdCrosshair.png'),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                              )
-                            : roundNumber == 0
-                                ? SizedBox(
-                                    // Player is dead,
-                                    child: Column(
-                                      children: [
-                                        FittedBox(
-                                          child: RichText(
-                                            text: const TextSpan(
-                                                text:
-                                                    'Wait for the game to begin',
-                                                style: heading),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: size.height * 0.4,
-                                          child: Image.asset(
-                                              'assets/images/thunderbirdCrosshair.png'),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : isAlive
-                                    ? Align(
-                                        // Player is alive
-                                        alignment: Alignment.center,
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              child: FittedBox(
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                      text:
-                                                          'Round $roundNumber',
-                                                      style: heading),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              child: FittedBox(
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                      text:
-                                                          'Current Target: $targetName',
-                                                      style: redOptionText),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: size.height * 0.4,
-                                              child: CachedNetworkImage(
-                                                imageUrl: usersSnapshot
-                                                    .child(userSnapshot
-                                                        .child('target')
-                                                        .value
-                                                        .toString())
-                                                    .child('photo_url')
-                                                    .value as String,
-                                                placeholder: (context, url) =>
-                                                    const Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    color: kCyanColor,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    : SizedBox(
-                                        // Player is dead,
-                                        child: Column(
-                                          children: [
-                                            FittedBox(
-                                              child: RichText(
-                                                text: const TextSpan(
-                                                    text:
-                                                        'You have been eliminated',
-                                                    style: heading),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: size.height * 0.4,
-                                              child: Image.asset(
-                                                  'assets/images/thunderbirdCrosshair.png'),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                      ),
-                    ),
-                    StreamBuilder(
-                      stream:
-                          Stream.periodic(const Duration(seconds: 1), (i) => i),
-                      builder:
-                          (BuildContext context, AsyncSnapshot<int> snapshot) {
-                        var timeLeft = getTimeLeft();
-                        return nextRound != null
-                            ? Container(
-                                padding: const EdgeInsets.all(8.0),
-                                alignment: Alignment.center,
-                                color: kDarkGreyColor,
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      child: roundNumber == 0
-                                          ? RichText(
-                                              text: const TextSpan(
-                                                text: 'Time Until Start',
-                                                style: smallerHeading,
-                                              ),
-                                            )
-                                          : RichText(
-                                              text: const TextSpan(
-                                                text: 'Time Remaining In Round',
-                                                style: smallerHeading,
-                                              ),
-                                            ),
-                                    ),
-                                    SizedBox(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          text: timeLeft,
-                                          style: heading,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : const SizedBox();
-                      },
-                    )
-                  ],
-                )
+              ? HomeViewAdmin(
+                  dates: dates, size: size, now: now, datesRef: datesRef)
+              : HomeViewUser(
+                  size: size,
+                  context: context,
+                  nextRound: nextRound,
+                  roundNumber: roundNumber,
+                  isAlive: isAlive,
+                  targetName: targetName,
+                  userSnapshot: userSnapshot,
+                  usersSnapshot: usersSnapshot)
           : super.loading_menu(context),
     );
   }
@@ -494,6 +169,196 @@ class _HomePageState extends AssassinState<HomePage> {
       loaded = true;
     });
   }
+}
+
+/// Home view for user
+/// If the game hasn't started, it shows a message showing the time remaining
+/// If the game has ended, it shows a message saying the game has ended
+/// If the user is alive, they are shown the time remaining for the next round w/ their target
+/// If the user is dead, it shows a message saying they are dead
+class HomeViewUser extends AssassinStatelessWidget {
+  const HomeViewUser({
+    super.key,
+    required this.size,
+    required this.context,
+    required this.nextRound,
+    required this.roundNumber,
+    required this.isAlive,
+    required this.targetName,
+    required this.userSnapshot,
+    required this.usersSnapshot,
+  });
+
+  final Size size;
+  final BuildContext context;
+  final DateTime? nextRound;
+  final int roundNumber;
+  final bool isAlive;
+  final String targetName;
+  final DataSnapshot userSnapshot;
+  final DataSnapshot usersSnapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Center(
+          child: SizedBox(
+            width: size.width * 0.9,
+            height: size.height * 0.5,
+            child: nextRound == null
+                ? SizedBox(
+                    // Game has ended
+                    child: isAlive
+                        ? win_view(context, size)
+                        : lose_view(context, size),
+                  )
+                : roundNumber == 0
+                    ? waiting_view(context, size)
+                    : isAlive
+                        ? assassin_view()
+                        : lose_view(context, size),
+          ),
+        ),
+        time_remaining()
+      ],
+    );
+  }
+
+  Align assassin_view() {
+    return Align(
+      // Player is alive
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          SizedBox(
+            child: FittedBox(
+              child: RichText(
+                text: TextSpan(text: 'Round $roundNumber', style: heading),
+              ),
+            ),
+          ),
+          SizedBox(
+            child: FittedBox(
+              child: RichText(
+                text: TextSpan(
+                    text: 'Current Target: $targetName', style: redOptionText),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: size.height * 0.4,
+            child: CachedNetworkImage(
+              imageUrl: usersSnapshot
+                  .child(userSnapshot.child('target').value.toString())
+                  .child('photo_url')
+                  .value as String,
+              placeholder: (context, url) => const Center(
+                child: CircularProgressIndicator(
+                  color: kCyanColor,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  StreamBuilder<int> time_remaining() {
+    return StreamBuilder(
+      stream: Stream.periodic(const Duration(seconds: 1), (i) => i),
+      builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+        var timeLeft = getTimeLeft();
+        return nextRound != null
+            ? Container(
+                padding: const EdgeInsets.all(8.0),
+                alignment: Alignment.center,
+                color: kDarkGreyColor,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      child: roundNumber == 0
+                          ? RichText(
+                              text: const TextSpan(
+                                text: 'Time Until Start',
+                                style: smallerHeading,
+                              ),
+                            )
+                          : RichText(
+                              text: const TextSpan(
+                                text: 'Time Remaining In Round',
+                                style: smallerHeading,
+                              ),
+                            ),
+                    ),
+                    SizedBox(
+                      child: RichText(
+                        text: TextSpan(
+                          text: timeLeft,
+                          style: heading,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : const SizedBox();
+      },
+    );
+  }
+
+  SizedBox waiting_view(BuildContext context, Size size) {
+    return SizedBox(
+      // Player is dead,
+      child: Column(
+        children: [
+          FittedBox(
+            child: RichText(
+              text: const TextSpan(
+                  text: 'Wait for the game to begin', style: heading),
+            ),
+          ),
+          super.thunderbird_icon_large(context, size),
+        ],
+      ),
+    );
+  }
+
+  SizedBox lose_view(context, size) {
+    return SizedBox(
+      // Player is dead,
+      child: Column(
+        children: [
+          FittedBox(
+            child: RichText(
+              text: const TextSpan(
+                  text: 'You have been eliminated', style: heading),
+            ),
+          ),
+          super.thunderbird_icon_large(context, size),
+        ],
+      ),
+    );
+  }
+
+  SizedBox win_view(context, size) {
+    return SizedBox(
+      // Player is alive
+      child: Column(
+        children: [
+          FittedBox(
+            child: RichText(
+              text: const TextSpan(
+                  text: 'Congratulations you won!', style: heading),
+            ),
+          ),
+          super.thunderbird_icon_large(context, size),
+        ],
+      ),
+    );
+  }
 
   String getTimeLeft() {
     format(Duration d) {
@@ -512,6 +377,166 @@ class _HomePageState extends AssassinState<HomePage> {
   }
 }
 
+/// Home view for admin
+/// Displays all the dates and times of the rounds
+/// Allows admin to add new rounds
+class HomeViewAdmin extends AssassinStatelessWidget {
+  const HomeViewAdmin({
+    super.key,
+    required this.dates,
+    required this.size,
+    required this.now,
+    required this.datesRef,
+  });
+
+  final List<DataSnapshot> dates;
+  final Size size;
+  final DateTime now;
+  final DatabaseReference datesRef;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        ListView.builder(
+          itemCount: dates.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Stack(
+              children: [
+                SizedBox(
+                  height: size.height * 0.03,
+                  child: Text(
+                    DateTime.parse(dates[index].child('time').value as String)
+                        .toLocal()
+                        .toIso8601String()
+                        .replaceAll('T', ' '),
+                    style: buttonInfo,
+                  ),
+                ),
+                Positioned(
+                  bottom: 5,
+                  right: 10,
+                  child: Row(
+                    children: [
+                      CupertinoButton(
+                        minSize: double.minPositive,
+                        padding: const EdgeInsets.all(5),
+                        child: const FaIcon(
+                          FontAwesomeIcons.pen,
+                          size: 15,
+                          color: kWhiteColor,
+                        ),
+                        onPressed: () async {
+                          final datePicked = await showDatePicker(
+                            context: context,
+                            initialDate: now,
+                            firstDate: now,
+                            lastDate: DateTime(
+                              now.year + 1,
+                              now.month,
+                              now.day,
+                            ),
+                          );
+                          if (datePicked != null) {
+                            final timePicked = await showTimePicker(
+                              context: context,
+                              initialTime:
+                                  const TimeOfDay(hour: 00, minute: 00),
+                            );
+                            if (timePicked != null) {
+                              DateTime newTime = DateTime(
+                                      datePicked.year,
+                                      datePicked.month,
+                                      datePicked.day,
+                                      timePicked.hour,
+                                      timePicked.minute)
+                                  .toUtc();
+                              datesRef.child('$index').update({
+                                'time': newTime.toIso8601String(),
+                                'started': false
+                              });
+                            }
+                          }
+                        },
+                      ),
+                      CupertinoButton(
+                        minSize: double.minPositive,
+                        padding: const EdgeInsets.all(5),
+                        child: const FaIcon(
+                          FontAwesomeIcons.trash,
+                          size: 15,
+                          color: kRedColor,
+                        ),
+                        onPressed: () {
+                          for (int i = index; i < dates.length - 1; i++) {
+                            datesRef.child('$i').set({
+                              'time': dates[i + 1].child('time').value!,
+                              'started': dates[i + 1].child('started').value!
+                            });
+                          }
+                          datesRef.child('${dates.length - 1}').remove();
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        Positioned(
+          bottom: 10,
+          right: 10,
+          child: Row(
+            children: [
+              CupertinoButton(
+                minSize: double.minPositive,
+                padding: const EdgeInsets.all(5),
+                child: const FaIcon(
+                  FontAwesomeIcons.plus,
+                  size: 30,
+                  color: kRedColor,
+                ),
+                onPressed: () async {
+                  final datePicked = await showDatePicker(
+                    context: context,
+                    initialDate: now,
+                    firstDate: now,
+                    lastDate: DateTime(
+                      now.year + 1,
+                      now.month,
+                      now.day,
+                    ),
+                  );
+                  if (datePicked != null) {
+                    final timePicked = await showTimePicker(
+                      context: context,
+                      initialTime: const TimeOfDay(hour: 00, minute: 00),
+                    );
+                    if (timePicked != null) {
+                      DateTime newTime = DateTime(
+                              datePicked.year,
+                              datePicked.month,
+                              datePicked.day,
+                              timePicked.hour,
+                              timePicked.minute)
+                          .toUtc();
+                      datesRef.child('${dates.length}').set({
+                        'time': newTime.toIso8601String(),
+                        'started': false
+                      });
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
 
 int getMinCycleLength(List perms) {
   List<int> cycles = [];

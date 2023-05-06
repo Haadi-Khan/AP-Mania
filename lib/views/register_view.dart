@@ -57,11 +57,7 @@ class _RegisterViewState extends AssassinState<RegisterView> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: size.height * 0.2,
-                    child:
-                        Image.asset('assets/images/thunderbirdCrosshair.png'),
-                  ),
+                  super.thunderbird_icon(context, size),
                   SizedBox(
                     height: size.height * 0.05,
                     width: size.width * 0.8,
@@ -182,99 +178,103 @@ class _RegisterViewState extends AssassinState<RegisterView> {
                   ),
                 ],
               ),
-              Positioned(
-                bottom: size.height * 0.04,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: size.width * 0.8,
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          final email = _email.text;
-                          final password = _password.text;
-                          final confirm = _confirmPass.text;
-                          if (confirm != password) {
-                            setState(() {
-                              errorMessage = textErrorNoMatch;
-                            });
-                          } else {
-                            try {
-                              final userCredential = await FirebaseAuth.instance
-                                  .createUserWithEmailAndPassword(
-                                email: email,
-                                password: password,
-                              );
-                              final databaseRef =
-                                  FirebaseDatabase.instance.ref();
-                              final usersRef = databaseRef.child('users');
-                              final userRef =
-                                  usersRef.child(userCredential.user!.uid);
-                              await userRef.set({
-                                "has_info": false,
-                                "has_chosen_game": false,
-                              });
-                              if (!mounted) return;
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                infoRoute,
-                                (_) => false,
-                              );
-                            } on FirebaseAuthException catch (e) {
-                              devtools.log(e.code);
-                              if (e.code == 'weak-password') {
-                                setState(() {
-                                  errorMessage = textErrorWeakPassword;
-                                });
-                              } else if (e.code == 'email-already-in-use') {
-                                setState(() {
-                                  errorMessage = textErrorUserExists;
-                                });
-                              } else if (e.code == 'invalid-email') {
-                                setState(() {
-                                  errorMessage = textErrorInvalidEmail;
-                                });
-                              }
-                            }
-                          }
-                        },
-                        style: ButtonStyle(
-                            foregroundColor:
-                                MaterialStateProperty.all<Color>(kBlackColor),
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(kWhiteColor),
-                            side: MaterialStateProperty.all<BorderSide>(
-                                BorderSide.none)),
-                        child: const Text(textSignUp),
-                      ),
-                    ),
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        children: <TextSpan>[
-                          const TextSpan(
-                            text: textHaveAcc,
-                            style: generalText,
-                          ),
-                          TextSpan(
-                            text: textLogin,
-                            style: redOptionText,
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  loginRoute,
-                                  (_) => false,
-                                );
-                              },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              submission(size, context),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Positioned submission(Size size, BuildContext context) {
+    return Positioned(
+              bottom: size.height * 0.04,
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: size.width * 0.8,
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        final email = _email.text;
+                        final password = _password.text;
+                        final confirm = _confirmPass.text;
+                        if (confirm != password) {
+                          setState(() {
+                            errorMessage = textErrorNoMatch;
+                          });
+                        } else {
+                          try {
+                            final userCredential = await FirebaseAuth.instance
+                                .createUserWithEmailAndPassword(
+                              email: email,
+                              password: password,
+                            );
+                            final databaseRef =
+                                FirebaseDatabase.instance.ref();
+                            final usersRef = databaseRef.child('users');
+                            final userRef =
+                                usersRef.child(userCredential.user!.uid);
+                            await userRef.set({
+                              "has_info": false,
+                              "has_chosen_game": false,
+                            });
+                            if (!mounted) return;
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              infoRoute,
+                              (_) => false,
+                            );
+                          } on FirebaseAuthException catch (e) {
+                            devtools.log(e.code);
+                            if (e.code == 'weak-password') {
+                              setState(() {
+                                errorMessage = textErrorWeakPassword;
+                              });
+                            } else if (e.code == 'email-already-in-use') {
+                              setState(() {
+                                errorMessage = textErrorUserExists;
+                              });
+                            } else if (e.code == 'invalid-email') {
+                              setState(() {
+                                errorMessage = textErrorInvalidEmail;
+                              });
+                            }
+                          }
+                        }
+                      },
+                      style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(kBlackColor),
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(kWhiteColor),
+                          side: MaterialStateProperty.all<BorderSide>(
+                              BorderSide.none)),
+                      child: const Text(textSignUp),
+                    ),
+                  ),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        const TextSpan(
+                          text: textHaveAcc,
+                          style: generalText,
+                        ),
+                        TextSpan(
+                          text: textLogin,
+                          style: redOptionText,
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                loginRoute,
+                                (_) => false,
+                              );
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
   }
 }

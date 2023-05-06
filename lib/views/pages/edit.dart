@@ -15,8 +15,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:developer' as devtools show log;
 
-/// Contains the information of the user.
-/// Profile Photo + Full Name + Phone Number
+/// Allow user to update their information.
 class EditView extends StatefulWidget {
   const EditView({Key? key}) : super(key: key);
 
@@ -75,15 +74,11 @@ class _EditViewState extends AssassinState<EditView> {
               text: const TextSpan(
                 children: <TextSpan>[
                   TextSpan(
-                    text: textInfoTitle,
+                    text: "Edit Profile",
                     style: heading,
                   ),
                 ],
               ),
-            ),
-            const Text(
-              textInfoSubtitle,
-              style: hintText,
             ),
             SizedBox(
               height: size.height * 0.01,
@@ -178,20 +173,26 @@ class _EditViewState extends AssassinState<EditView> {
       width: size.width * 0.4,
       child: OutlinedButton(
         onPressed: () async {
-          var temp = await _picker.pickImage(source: ImageSource.gallery);
-          if (temp != null) {
-            final imageFile = File(temp.path);
-            cropImage(imageFile);
-            if (imageFile.lengthSync() < 3000000) {
-              setState(() {
-                image = imageFile;
-                errorMessage = null;
-              });
-            } else {
-              setState(() {
-                errorMessage = '  File size must be < 3MB';
-              });
+          try {
+            var temp = await _picker.pickImage(source: ImageSource.gallery);
+            if (temp != null) {
+              final imageFile = File(temp.path);
+              cropImage(imageFile);
+              if (imageFile.lengthSync() < 3000000) {
+                setState(() {
+                  image = imageFile;
+                  errorMessage = null;
+                });
+              } else {
+                setState(() {
+                  errorMessage = '  File size must be < 3MB';
+                });
+              }
             }
+          } catch (e) {
+            setState(() {
+              errorMessage = '  Image is corrupt';
+            });
           }
         },
         style: ButtonStyle(
@@ -305,7 +306,6 @@ class _EditViewState extends AssassinState<EditView> {
               "name": fullName,
               "phone": phoneNumber,
               "photo_url": imageURL,
-              "has_info": true,
             });
 
             // sync the user's info in 'user's and the user's profile in their current game

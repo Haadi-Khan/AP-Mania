@@ -161,8 +161,7 @@ const textVerification3 =
     'Contact your coordinator with any questions or issues';
 
 // Logout Text
-const textLogout = 'Log Out';
-const textLogoutCheck = 'Are you sure you want to log out?';
+const textLogoutCheck = 'Are you sure you want to ';
 
 // People Text
 const textShowAlive = 'Remaining Players';

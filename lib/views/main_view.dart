@@ -138,7 +138,7 @@ class _MainViewState extends AssassinState<MainView> {
         FirebaseDatabase.instance.ref('games/$game/users/$id/verified');
     _verifiedSubscription = verifiedRef.onValue.listen((DatabaseEvent event) {
       setState(() {
-        verified = event.snapshot.value as bool;
+        verified = event.snapshot.value.runtimeType == Null ? false : event.snapshot.value as bool;
       });
     });
   }

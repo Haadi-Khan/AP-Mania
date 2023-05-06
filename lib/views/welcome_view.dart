@@ -19,7 +19,7 @@ class WelcomeView extends AssassinStatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset("assets/images/thunderbird.png"),
+              super.thunderbird_icon_large(context, size),
               SizedBox(height: size.height * 0.1),
               SizedBox(
                 width: size.width * 0.8,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hse_assassin/views/pages/edit.dart';
 // import 'package:hse_assassin/views/testview.dart';
 
 import 'util/firebase_options.dart';
@@ -33,6 +34,7 @@ void main() {
           registerRoute: (context) => const RegisterView(),
           homeRoute: (context) => const MainView(),
           infoRoute: (context) => const InfoView(),
+          editRoute: (context) => const EditView(),
           gameChoiceRoute: (context) => const GameChoiceView(),
         },
       ),

@@ -12,7 +12,7 @@ import 'package:hse_assassin/constants/constants.dart';
 import 'package:hse_assassin/constants/routes.dart';
 import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
-enum MenuAction { logout }
+enum MenuAction { logout, edit, leave }
 
 ///This displays the home page of the app.
 /// If a user is not verified, they are shown the [VerifyPage].
@@ -552,14 +552,16 @@ int getMinCycleLength(List perms) {
   return cycles.reduce(min);
 }
 
-Future<bool> showLogoutDialog(BuildContext context) {
+Future<bool> showLogoutDialog(BuildContext context, String text) {
+  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+
   return showDialog<bool>(
     context: context,
     builder: (context) {
       return AlertDialog(
         backgroundColor: kBlackColor,
-        title: const Text(textLogout, style: heading),
-        content: const Text(textLogoutCheck, style: generalText),
+        title: Text(capitalize(text), style: heading),
+        content: Text(textLogoutCheck + text, style: generalText),
         actions: [
           TextButton(
             onPressed: () {
@@ -571,7 +573,7 @@ Future<bool> showLogoutDialog(BuildContext context) {
             onPressed: () {
               Navigator.of(context).pop(true);
             },
-            child: const Text(textLogout, style: redOptionText),
+            child: Text(capitalize(text), style: redOptionText),
           )
         ],
       );
@@ -589,7 +591,7 @@ AppBar homeBar(BuildContext context, State state) {
         onSelected: (value) async {
           switch (value) {
             case MenuAction.logout:
-              final shouldLogout = await showLogoutDialog(context);
+              final shouldLogout = await showLogoutDialog(context, "logout");
               if (shouldLogout) {
                 await FirebaseAuth.instance.signOut();
                 if (!state.mounted) return;
@@ -598,13 +600,55 @@ AppBar homeBar(BuildContext context, State state) {
                   (_) => false,
                 );
               }
+              break;
+            case MenuAction.edit:
+              // send the user to the info page, but when they press back, they should be taken to the home page
+              // this is because the user is still in the game
+              Navigator.of(context).pushNamed(
+                editRoute,
+                arguments: true,
+              );
+              break;
+            case MenuAction.leave:
+              final shouldLeave = await showLogoutDialog(context, "leave");
+              if (shouldLeave) {
+                String id = FirebaseAuth.instance.currentUser!.uid;
+                final userRef = FirebaseDatabase.instance.ref('users/$id');
+                final game = await userRef
+                    .child('game')
+                    .get()
+                    .then((value) => value.value);
+                final gameRef =
+                    FirebaseDatabase.instance.ref('games/$game/users/');
+
+                await userRef.update({
+                  "has_chosen_game": false,
+                });
+                await userRef.child('game').remove();
+                await gameRef.child(id).remove();
+
+                if (!state.mounted) return;
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  gameChoiceRoute,
+                  (_) => false,
+                );
+              }
+              break;
           }
         },
         itemBuilder: (context) {
           return [
             const PopupMenuItem<MenuAction>(
+              value: MenuAction.edit,
+              child: Text('Edit Account', style: generalText),
+            ),
+            const PopupMenuItem<MenuAction>(
               value: MenuAction.logout,
               child: Text('Log out', style: generalText),
+            ),
+            const PopupMenuItem<MenuAction>(
+              value: MenuAction.leave,
+              child: Text('Leave Game', style: generalText),
             ),
           ];
         },

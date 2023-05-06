@@ -2,9 +2,12 @@
 
 Hi Dan I love you
 
+NEW FEATURES:
+
+- Multiple coordinators!
+
 TODO:
 
 - Secure Firebase
-- Enable multiple coordinators in a match (just need to fix the main login)
 - Improve code quality
 - Add unit testing?

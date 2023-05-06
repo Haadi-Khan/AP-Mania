@@ -9,7 +9,6 @@ import 'package:hse_assassin/constants/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
-
 /**
  * TODO: 
  * - Finish cleaning the alert dialog
@@ -113,7 +112,7 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
                                     ),
                                     Positioned(
                                       bottom: 0,
-                                      left: 0,
+                                      left: 10,
                                       child: Visibility(
                                         visible: adminMode,
                                         child: showPeople[index]
@@ -123,88 +122,36 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
                                             : showPeople[index]
                                                     .child('alive')
                                                     .value as bool
-                                                ? CupertinoButton(
-                                                    padding:
-                                                        const EdgeInsets.all(5),
-                                                    child: const FaIcon(
-                                                      FontAwesomeIcons.skull,
-                                                      size: 20,
-                                                      color: kWhiteColor,
-                                                    ),
-                                                    onPressed: () async {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                      usersRef
-                                                          .child(
-                                                              showPeople[index]
-                                                                  .key!)
-                                                          .update(
-                                                              {'alive': false});
-                                                    },
-                                                  )
-                                                : CupertinoButton(
-                                                    padding:
-                                                        const EdgeInsets.all(5),
-                                                    child: const FaIcon(
-                                                      FontAwesomeIcons.heart,
-                                                      size: 20,
-                                                      color: kWhiteColor,
-                                                    ),
-                                                    onPressed: () async {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                      usersRef
-                                                          .child(
-                                                              showPeople[index]
-                                                                  .key!)
-                                                          .update(
-                                                              {'alive': true});
-                                                    },
-                                                  ),
+                                                ? adminEliminateButton(
+                                                    context, index)
+                                                : adminReviveButton(
+                                                    context, index),
                                       ),
                                     ),
                                     Positioned(
                                       bottom: 0,
-                                      right: 0,
+                                      left: 100,
+                                      child: Visibility(
+                                        visible: adminMode,
+                                        child: showPeople[index]
+                                                .child('admin')
+                                                .value as bool
+                                            ? adminDemote(context, index)
+                                            : adminPromote(context, index),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 10,
                                       child: Visibility(
                                         visible: adminMode,
                                         child: showPeople[index]
                                                 .child('verified')
                                                 .value as bool
-                                            ? CupertinoButton(
-                                                padding:
-                                                    const EdgeInsets.all(5),
-                                                child: const FaIcon(
-                                                  FontAwesomeIcons.x,
-                                                  size: 20,
-                                                  color: kWhiteColor,
-                                                ),
-                                                onPressed: () async {
-                                                  Navigator.of(context).pop();
-                                                  usersRef
-                                                      .child(showPeople[index]
-                                                          .key!)
-                                                      .update(
-                                                          {'verified': false});
-                                                },
-                                              )
-                                            : CupertinoButton(
-                                                padding:
-                                                    const EdgeInsets.all(5),
-                                                child: const FaIcon(
-                                                  FontAwesomeIcons.check,
-                                                  size: 20,
-                                                  color: kWhiteColor,
-                                                ),
-                                                onPressed: () async {
-                                                  Navigator.of(context).pop();
-                                                  usersRef
-                                                      .child(showPeople[index]
-                                                          .key!)
-                                                      .update(
-                                                          {'verified': true});
-                                                },
-                                              ),
+                                            ? adminUnverifyButton(
+                                                context, index)
+                                            :  adminVerifyButton(
+                                                    context, index),
                                       ),
                                     ),
                                   ],
@@ -229,6 +176,110 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
         : super.loading_menu(context);
   }
 
+  /// Button to verify a player
+  CupertinoButton adminVerifyButton(BuildContext context, int index) {
+    return CupertinoButton(
+      padding: const EdgeInsets.all(5),
+      child: const FaIcon(
+        FontAwesomeIcons.check,
+        size: 20,
+        color: kWhiteColor,
+      ),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        usersRef.child(showPeople[index].key!).update({'verified': true});
+      },
+    );
+  }
+
+  /// Button to promote a player from  player to admin
+  CupertinoButton adminPromote(BuildContext context, int index) {
+    return CupertinoButton(
+      padding: const EdgeInsets.all(5),
+      child: const FaIcon(
+        FontAwesomeIcons.circleChevronUp,
+        size: 20,
+        color: kWhiteColor,
+      ),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        usersRef.child(showPeople[index].key!).update({'admin': true});
+        usersRef
+            .child(showPeople[index].key!)
+            .update({'killed_this_round': true});
+        usersRef.child(showPeople[index].key!).update({'alive': true});
+      },
+    );
+  }
+  /// Button to demote a player from admin to player
+  CupertinoButton adminDemote(BuildContext context, int index) {
+    return CupertinoButton(
+      padding: const EdgeInsets.all(5),
+      child: const FaIcon(
+        FontAwesomeIcons.circleChevronDown,
+        size: 20,
+        color: kWhiteColor,
+      ),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        usersRef.child(showPeople[index].key!).update({'admin': false});
+        usersRef
+            .child(showPeople[index].key!)
+            .update({'killed_this_round': true});
+        usersRef.child(showPeople[index].key!).update({'kills': 0});
+        usersRef.child(showPeople[index].key!).update({'alive': true});
+      },
+    );
+  }
+
+  /// Button to unverify a player
+  CupertinoButton adminUnverifyButton(BuildContext context, int index) {
+    return CupertinoButton(
+      padding: const EdgeInsets.all(5),
+      child: const FaIcon(
+        FontAwesomeIcons.x,
+        size: 20,
+        color: kWhiteColor,
+      ),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        usersRef.child(showPeople[index].key!).update({'verified': false});
+      },
+    );
+  }
+
+  /// Button to revive player
+  CupertinoButton adminReviveButton(BuildContext context, int index) {
+    return CupertinoButton(
+      padding: const EdgeInsets.all(5),
+      child: const FaIcon(
+        FontAwesomeIcons.heart,
+        size: 20,
+        color: kWhiteColor,
+      ),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        usersRef.child(showPeople[index].key!).update({'alive': true});
+      },
+    );
+  }
+
+  /// Button to eliminate player
+  CupertinoButton adminEliminateButton(BuildContext context, int index) {
+    return CupertinoButton(
+      padding: const EdgeInsets.all(5),
+      child: const FaIcon(
+        FontAwesomeIcons.skull,
+        size: 20,
+        color: kWhiteColor,
+      ),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        usersRef.child(showPeople[index].key!).update({'alive': false});
+      },
+    );
+  }
+
   /// Displays the player name in the popup
   Text playerNamePopup(int index) {
     return Text(
@@ -249,7 +300,9 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Kills: ${showPeople[index].child('kills').value as int}',
+                    showPeople[index].child('kills').value.runtimeType == Null
+                        ? 'JOINING AS A COORDINATOR!'
+                        : 'Kills: ${showPeople[index].child('kills').value as int}',
                     style: popupText,
                     textAlign: TextAlign.left,
                   ),

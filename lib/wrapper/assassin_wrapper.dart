@@ -11,6 +11,57 @@ abstract class AssassinState<T extends StatefulWidget> extends State {
       child: Image.asset('assets/images/thunderbird.png'),
     );
   }
+  Widget thunderbird_icon_large(BuildContext context, size) {
+    return SizedBox(
+      height: size.height * 0.4,
+      child: Image.asset('assets/images/thunderbird.png'),
+    );
+  }
+
+  Widget loading_menu(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          RichText(
+            textAlign: TextAlign.center,
+            text: const TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                  text: textLoading,
+                  style: TextStyle(
+                    color: kCyanColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const CircularProgressIndicator(
+            color: kCyanColor,
+          )
+        ],
+      ),
+    );
+  }
+}
+
+abstract class AssassinStatelessWidget extends StatelessWidget {
+  const AssassinStatelessWidget({Key? key}) : super(key: key);
+
+  Widget thunderbird_icon(BuildContext context, size) {
+    return SizedBox(
+      height: size.height * 0.2,
+      child: Image.asset('assets/images/thunderbird.png'),
+    );
+  }
+  Widget thunderbird_icon_large(BuildContext context, size) {
+    return SizedBox(
+      height: size.height * 0.4,
+      child: Image.asset('assets/images/thunderbird.png'),
+    );
+  }
 
   Widget loading_menu(BuildContext context) {
     return Center(

@@ -588,6 +588,7 @@ AppBar homeBar(BuildContext context, State state) {
     actions: [
       PopupMenuButton<MenuAction>(
         color: kBlackColor,
+        icon: const Icon(Icons.more_horiz, color: kWhiteColor,),
         onSelected: (value) async {
           switch (value) {
             case MenuAction.logout:
@@ -602,8 +603,6 @@ AppBar homeBar(BuildContext context, State state) {
               }
               break;
             case MenuAction.edit:
-              // send the user to the info page, but when they press back, they should be taken to the home page
-              // this is because the user is still in the game
               Navigator.of(context).pushNamed(
                 editRoute,
                 arguments: true,
@@ -648,7 +647,7 @@ AppBar homeBar(BuildContext context, State state) {
             ),
             const PopupMenuItem<MenuAction>(
               value: MenuAction.leave,
-              child: Text('Leave Game', style: generalText),
+              child: Text('Leave Game', style: redOptionText),
             ),
           ];
         },

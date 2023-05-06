@@ -50,6 +50,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.0
   googleapis: ^10.1.0
   googleapis_auth: ^1.4.0
+  image_cropper: ^3.0.3
 
 dev_dependencies:
   flutter_test:

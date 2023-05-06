@@ -11,9 +11,12 @@ import 'package:hse_assassin/constants/routes.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hse_assassin/util/google_drive.dart';
 import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:developer' as devtools show log;
 
+/// Contains the information of the user.
+/// Profile Photo + Full Name + Phone Number
 class InfoView extends StatefulWidget {
   const InfoView({Key? key}) : super(key: key);
 
@@ -106,25 +109,7 @@ class _InfoViewState extends AssassinState<InfoView> {
             SizedBox(
               height: size.height * 0.01,
             ),
-            SizedBox(
-              width: size.width * 0.8,
-              child: TextField(
-                  controller: _phoneNumber,
-                  decoration: InputDecoration(
-                    hintStyle: hintText,
-                    hintText: textHintPhoneNumber,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 15.0,
-                      horizontal: 10.0,
-                    ),
-                    enabledBorder: border,
-                    focusedBorder: border,
-                  ),
-                  autocorrect: false,
-                  style: generalText,
-                  keyboardType: TextInputType.number,
-                  keyboardAppearance: Brightness.dark),
-            ),
+            phoneInput(size, border),
             SizedBox(
               height: size.height * 0.01,
             ),
@@ -140,155 +125,199 @@ class _InfoViewState extends AssassinState<InfoView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: size.width * 0.4,
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      var temp =
-                          await _picker.pickImage(source: ImageSource.gallery);
-                      if (temp != null) {
-                        final imageFile = File(temp.path);
-                        if (imageFile.lengthSync() < 3000000) {
-                          setState(() {
-                            image = imageFile;
-                            errorMessage = null;
-                          });
-                        } else {
-                          setState(() {
-                            errorMessage = '  File size must be < 3MB';
-                          });
-                        }
-                      }
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(kGreyColor),
-                      side: MaterialStateProperty.all<BorderSide>(
-                          BorderSide.none),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        FaIcon(FontAwesomeIcons.images, color: kWhiteColor),
-                        Text(textChoosePhoto, style: generalText),
-                      ],
-                    ),
-                  ),
-                ),
+                galleryUpload(size),
                 SizedBox(width: size.width * 0.07),
-                SizedBox(
-                  width: size.width * 0.4,
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      var temp =
-                          await _picker.pickImage(source: ImageSource.camera);
-                      if (temp != null) {
-                        final imageFile = File(temp.path);
-                        if (imageFile.lengthSync() < 3000000) {
-                          setState(() {
-                            image = imageFile;
-                            errorMessage = null;
-                          });
-                        } else {
-                          setState(() {
-                            errorMessage = '  File size must be < 3MB';
-                          });
-                        }
-                      }
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(kGreyColor),
-                      side: MaterialStateProperty.all<BorderSide>(
-                          BorderSide.none),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        FaIcon(FontAwesomeIcons.camera, color: kWhiteColor),
-                        Text(textTakePhoto, style: generalText),
-                      ],
-                    ),
-                  ),
-                ),
+                cameraUpload(size),
               ],
             ),
             SizedBox(height: size.height * 0.01),
-            SizedBox(
-              height: size.height * 0.3,
-              width: size.width * 0.8,
-              child: image == null
-                  ? null
-                  : Image.file(
-                      image!,
-                      fit: BoxFit.contain,
-                    ),
-            ),
-            SizedBox(
-              height: size.height * 0.05,
-              width: size.width * 0.8,
-              child: errorMessage == null
-                  ? null
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const FaIcon(FontAwesomeIcons.circleExclamation,
-                            color: kOrangeColor),
-                        Text(errorMessage ?? '',
-                            style: const TextStyle(color: kOrangeColor)),
-                      ],
-                    ),
-            ),
-            SizedBox(
-              width: size.width * 0.8,
-              child: OutlinedButton(
-                onPressed: () async {
-                  final fullName = _fullName.text;
-                  final phoneNumber = _phoneNumber.text;
-                  if (image == null || fullName == '' || phoneNumber == '') {
-                    setState(() {
-                      errorMessage = textErrorMissingFields;
-                      devtools.log(errorMessage!);
-                    });
-                  } else if (phoneNumber.length < 10) {
-                    setState(() {
-                      errorMessage = '  Invalid phone number';
-                      devtools.log(errorMessage!);
-                    });
-                  } else {
-                    final user = FirebaseAuth.instance.currentUser!;
-
-                    final imageURL = await uploadFileToGoogleDrive(image!);
-
-                    final databaseRef = FirebaseDatabase.instance.ref();
-                    final usersRef = databaseRef.child('users');
-                    final userRef = usersRef.child(user.uid);
-                    await userRef.update({
-                      "name": fullName,
-                      "phone": phoneNumber,
-                      "photo_url": imageURL,
-                      "has_info": true,
-                    });
-
-                    if (!mounted) return;
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      gameChoiceRoute,
-                      (_) => false,
-                    );
-                  }
-                },
-                style: ButtonStyle(
-                    foregroundColor:
-                        MaterialStateProperty.all<Color>(kBlackColor),
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(kWhiteColor),
-                    side:
-                        MaterialStateProperty.all<BorderSide>(BorderSide.none)),
-                child: const Text(textSignUp),
-              ),
-            ),
+            imagePreview(size),
+            errorIcon(size),
+            submissionButton(size, context),
           ],
         ),
+      ),
+    );
+  }
+
+  SizedBox phoneInput(Size size, OutlineInputBorder border) {
+    return SizedBox(
+      width: size.width * 0.8,
+      child: TextField(
+          controller: _phoneNumber,
+          decoration: InputDecoration(
+            hintStyle: hintText,
+            hintText: textHintPhoneNumber,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 15.0,
+              horizontal: 10.0,
+            ),
+            enabledBorder: border,
+            focusedBorder: border,
+          ),
+          autocorrect: false,
+          style: generalText,
+          keyboardType: TextInputType.number,
+          keyboardAppearance: Brightness.dark),
+    );
+  }
+
+  Future<void> cropImage(File file) async {
+    final cropped = await ImageCropper().cropImage(sourcePath: file.path, aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1));
+    if(cropped != null) {
+      setState(() {
+        image = File(cropped.path);
+      });
+    }
+  }
+
+  SizedBox galleryUpload(Size size) {
+    return SizedBox(
+      width: size.width * 0.4,
+      child: OutlinedButton(
+        onPressed: () async {
+          var temp = await _picker.pickImage(source: ImageSource.gallery);
+          if (temp != null) {
+            final imageFile = File(temp.path);
+            cropImage(imageFile);
+            if (imageFile.lengthSync() < 3000000) {
+              setState(() {
+                image = imageFile;
+                errorMessage = null;
+              });
+            } else {
+              setState(() {
+                errorMessage = '  File size must be < 3MB';
+              });
+            }
+          }
+        },
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(kGreyColor),
+          side: MaterialStateProperty.all<BorderSide>(BorderSide.none),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            FaIcon(FontAwesomeIcons.images, color: kWhiteColor),
+            Text(textChoosePhoto, style: generalText),
+          ],
+        ),
+      ),
+    );
+  }
+
+  SizedBox cameraUpload(Size size) {
+    return SizedBox(
+      width: size.width * 0.4,
+      child: OutlinedButton(
+        onPressed: () async {
+          var temp = await _picker.pickImage(source: ImageSource.camera);
+          if (temp != null) {
+            final imageFile = File(temp.path);
+            cropImage(imageFile);
+            if (imageFile.lengthSync() < 3000000) {
+              setState(() {
+                image = imageFile;
+                errorMessage = null;
+              });
+            } else {
+              setState(() {
+                errorMessage = '  File size must be < 3MB';
+              });
+            }
+          }
+        },
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(kGreyColor),
+          side: MaterialStateProperty.all<BorderSide>(BorderSide.none),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            FaIcon(FontAwesomeIcons.camera, color: kWhiteColor),
+            Text(textTakePhoto, style: generalText),
+          ],
+        ),
+      ),
+    );
+  }
+
+  SizedBox imagePreview(Size size) {
+    return SizedBox(
+      height: size.height * 0.3,
+      width: size.width * 0.8,
+      child: image == null
+          ? null
+          : Image.file(
+              image!,
+              fit: BoxFit.contain,
+            ),
+    );
+  }
+
+  SizedBox errorIcon(Size size) {
+    return SizedBox(
+      height: size.height * 0.05,
+      width: size.width * 0.8,
+      child: errorMessage == null
+          ? null
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const FaIcon(FontAwesomeIcons.circleExclamation,
+                    color: kOrangeColor),
+                Text(errorMessage ?? '',
+                    style: const TextStyle(color: kOrangeColor)),
+              ],
+            ),
+    );
+  }
+
+  SizedBox submissionButton(Size size, BuildContext context) {
+    return SizedBox(
+      width: size.width * 0.8,
+      child: OutlinedButton(
+        onPressed: () async {
+          final fullName = _fullName.text;
+          final phoneNumber = _phoneNumber.text;
+          if (image == null || fullName == '' || phoneNumber == '') {
+            setState(() {
+              errorMessage = textErrorMissingFields;
+              devtools.log(errorMessage!);
+            });
+          } else if (phoneNumber.length < 10) {
+            setState(() {
+              errorMessage = '  Invalid phone number';
+              devtools.log(errorMessage!);
+            });
+          } else {
+            final user = FirebaseAuth.instance.currentUser!;
+
+            final imageURL = await uploadFileToGoogleDrive(image!);
+
+            final databaseRef = FirebaseDatabase.instance.ref();
+            final usersRef = databaseRef.child('users');
+            final userRef = usersRef.child(user.uid);
+            await userRef.update({
+              "name": fullName,
+              "phone": phoneNumber,
+              "photo_url": imageURL,
+              "has_info": true,
+            });
+
+            if (!mounted) return;
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              gameChoiceRoute,
+              (_) => false,
+            );
+          }
+        },
+        style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all<Color>(kBlackColor),
+            backgroundColor: MaterialStateProperty.all<Color>(kWhiteColor),
+            side: MaterialStateProperty.all<BorderSide>(BorderSide.none)),
+        child: const Text(textSignUp),
       ),
     );
   }

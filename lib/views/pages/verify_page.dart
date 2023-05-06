@@ -1,8 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:hse_assassin/constants/constants.dart';
+import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
 /// This page is shown when the user is not verified.
-class VerifyPage extends StatelessWidget {
+class VerifyPage extends AssassinStatelessWidget {
   const VerifyPage({Key? key}) : super(key: key);
 
   @override
@@ -28,10 +29,7 @@ class VerifyPage extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(
-          height: size.height * 0.4,
-          child: Image.asset('assets/images/thunderbird.png'),
-        ),
+      super.thunderbird_icon_large(context, size),
       ],
     );
   }

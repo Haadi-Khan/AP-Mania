@@ -9,13 +9,6 @@ import 'package:hse_assassin/constants/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
-/**
- * TODO: 
- * - Finish cleaning the alert dialog
- * - Add option to add extra coordinators
- * - Use theme to standardize theming
- */
-
 enum ShowTypes { alive, all, admin, unverified }
 
 enum SortTypes { aToZ, zToA, mostKills }
@@ -150,8 +143,7 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
                                                 .value as bool
                                             ? adminUnverifyButton(
                                                 context, index)
-                                            :  adminVerifyButton(
-                                                    context, index),
+                                            : adminVerifyButton(context, index),
                                       ),
                                     ),
                                   ],
@@ -211,6 +203,7 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
       },
     );
   }
+
   /// Button to demote a player from admin to player
   CupertinoButton adminDemote(BuildContext context, int index) {
     return CupertinoButton(

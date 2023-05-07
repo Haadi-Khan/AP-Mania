@@ -163,8 +163,10 @@ class _InfoViewState extends AssassinState<InfoView> {
   }
 
   Future<void> cropImage(File file) async {
-    final cropped = await ImageCropper().cropImage(sourcePath: file.path, aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1));
-    if(cropped != null) {
+    final cropped = await ImageCropper().cropImage(
+        sourcePath: file.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1));
+    if (cropped != null) {
       setState(() {
         image = File(cropped.path);
       });
@@ -176,20 +178,26 @@ class _InfoViewState extends AssassinState<InfoView> {
       width: size.width * 0.4,
       child: OutlinedButton(
         onPressed: () async {
-          var temp = await _picker.pickImage(source: ImageSource.gallery);
-          if (temp != null) {
-            final imageFile = File(temp.path);
-            cropImage(imageFile);
-            if (imageFile.lengthSync() < 3000000) {
-              setState(() {
-                image = imageFile;
-                errorMessage = null;
-              });
-            } else {
-              setState(() {
-                errorMessage = '  File size must be < 3MB';
-              });
+          try {
+            var temp = await _picker.pickImage(source: ImageSource.gallery);
+            if (temp != null) {
+              final imageFile = File(temp.path);
+              cropImage(imageFile);
+              if (imageFile.lengthSync() < 3000000) {
+                setState(() {
+                  image = imageFile;
+                  errorMessage = null;
+                });
+              } else {
+                setState(() {
+                  errorMessage = '  File size must be < 3MB';
+                });
+              }
             }
+          } catch (e) {
+            setState(() {
+              errorMessage = '  Image is corrupt';
+            });
           }
         },
         style: ButtonStyle(

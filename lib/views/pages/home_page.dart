@@ -95,7 +95,7 @@ class _HomePageState extends AssassinState<HomePage> {
     if (!admin) {
       usersRef.child('$id/alive').onValue.listen((DatabaseEvent event) {
         setState(() {
-          isAlive = event.snapshot.value as bool;
+          isAlive = event.snapshot.value.runtimeType==Null ? false : event.snapshot.value as bool;
         });
       });
     }
@@ -251,6 +251,9 @@ class HomeViewUser extends AssassinStatelessWidget {
             height: size.height * 0.4,
             child: CachedNetworkImage(
               imageUrl: usersSnapshot
+                  .child(userSnapshot.child('target').value.toString())
+                  .child('photo_url')
+                  .value.runtimeType == Null ? '' :  usersSnapshot
                   .child(userSnapshot.child('target').value.toString())
                   .child('photo_url')
                   .value as String,
@@ -583,7 +586,7 @@ Future<bool> showLogoutDialog(BuildContext context, String text) {
 
 AppBar homeBar(BuildContext context, State state) {
   return AppBar(
-    title: const Text('Welcome to AP Assassin!', style: smallerHeading),
+    title: const Text('Welcome to Hills Mania!', style: smallerHeading),
     backgroundColor: kBlackColor,
     actions: [
       PopupMenuButton<MenuAction>(

@@ -6,7 +6,7 @@ NEW FEATURES:
 
 - Multiple coordinators!
 - Image cropping for standardized pfps
-- Reimplemented home menu
+- Reimplemented home menu options
 
 TODO:
 

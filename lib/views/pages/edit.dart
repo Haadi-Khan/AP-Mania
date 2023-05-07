@@ -83,24 +83,7 @@ class _EditViewState extends AssassinState<EditView> {
             SizedBox(
               height: size.height * 0.01,
             ),
-            SizedBox(
-              width: size.width * 0.8,
-              child: TextField(
-                  controller: _fullName,
-                  decoration: InputDecoration(
-                    hintStyle: hintText,
-                    hintText: textHintFullName,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 15.0,
-                      horizontal: 10.0,
-                    ),
-                    enabledBorder: border,
-                    focusedBorder: border,
-                  ),
-                  style: generalText,
-                  autocorrect: false,
-                  keyboardAppearance: Brightness.dark),
-            ),
+            nameInput(size, border),
             SizedBox(
               height: size.height * 0.01,
             ),
@@ -135,25 +118,71 @@ class _EditViewState extends AssassinState<EditView> {
     );
   }
 
+  SizedBox nameInput(Size size, OutlineInputBorder border) {
+    return SizedBox(
+      width: size.width * 0.8,
+      child: FutureBuilder(
+          future: FirebaseDatabase.instance.ref().child('users').get(),
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              DataSnapshot values = snapshot.data as DataSnapshot;
+              final user = FirebaseAuth.instance.currentUser!;
+              String name =
+                  values.child(user.uid).child('name').value as String;
+              _fullName.text = name;
+            }
+
+            return TextField(
+              controller: _fullName,
+              decoration: InputDecoration(
+                hintStyle: hintText,
+                hintText: textHintFullName,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 15.0,
+                  horizontal: 10.0,
+                ),
+                enabledBorder: border,
+                focusedBorder: border,
+              ),
+              style: generalText,
+              autocorrect: false,
+              keyboardAppearance: Brightness.dark,
+              onChanged: (value) => {},
+            );
+          }),
+    );
+  }
+
   SizedBox phoneInput(Size size, OutlineInputBorder border) {
     return SizedBox(
       width: size.width * 0.8,
-      child: TextField(
-          controller: _phoneNumber,
-          decoration: InputDecoration(
-            hintStyle: hintText,
-            hintText: textHintPhoneNumber,
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 15.0,
-              horizontal: 10.0,
-            ),
-            enabledBorder: border,
-            focusedBorder: border,
-          ),
-          autocorrect: false,
-          style: generalText,
-          keyboardType: TextInputType.number,
-          keyboardAppearance: Brightness.dark),
+      child: FutureBuilder(
+          future: FirebaseDatabase.instance.ref().child('users').get(),
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              DataSnapshot values = snapshot.data as DataSnapshot;
+              final user = FirebaseAuth.instance.currentUser!;
+              String phone =
+                  values.child(user.uid).child('phone').value as String;
+              _phoneNumber.text = phone;
+            }
+            return TextField(
+                controller: _phoneNumber,
+                decoration: InputDecoration(
+                  hintStyle: hintText,
+                  hintText: textHintPhoneNumber,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 15.0,
+                    horizontal: 10.0,
+                  ),
+                  enabledBorder: border,
+                  focusedBorder: border,
+                ),
+                autocorrect: false,
+                style: generalText,
+                keyboardType: TextInputType.number,
+                keyboardAppearance: Brightness.dark);
+          }),
     );
   }
 
@@ -302,6 +331,7 @@ class _EditViewState extends AssassinState<EditView> {
             final databaseRef = FirebaseDatabase.instance.ref();
             final usersRef = databaseRef.child('users');
             final userRef = usersRef.child(user.uid);
+            print(fullName);
             await userRef.update({
               "name": fullName,
               "phone": phoneNumber,

@@ -105,7 +105,7 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
                                     ),
                                     Positioned(
                                       bottom: 0,
-                                      left: 10,
+                                      left: 0,
                                       child: Visibility(
                                         visible: adminMode,
                                         child: showPeople[index]
@@ -123,7 +123,7 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
                                     ),
                                     Positioned(
                                       bottom: 0,
-                                      left: 100,
+                                      left: 50,
                                       child: Visibility(
                                         visible: adminMode,
                                         child: showPeople[index]
@@ -135,7 +135,7 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
                                     ),
                                     Positioned(
                                       bottom: 0,
-                                      right: 10,
+                                      right: 0,
                                       child: Visibility(
                                         visible: adminMode,
                                         child: showPeople[index]

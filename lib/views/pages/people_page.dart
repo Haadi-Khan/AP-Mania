@@ -165,7 +165,7 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
               ),
             ],
           )
-        : super.loading_menu(context);
+        : super.loadingMenu(context);
   }
 
   /// Button to verify a player

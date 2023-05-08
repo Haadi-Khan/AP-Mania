@@ -5,6 +5,7 @@ import 'package:hse_assassin/constants/routes.dart';
 import 'package:hse_assassin/constants/constants.dart';
 import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
+/// Screen the user is greeted with when they first open the app w/o an account
 class WelcomeView extends AssassinStatelessWidget {
   const WelcomeView({Key? key}) : super(key: key);
 
@@ -19,7 +20,7 @@ class WelcomeView extends AssassinStatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              super.thunderbird_icon_large(context, size),
+              super.thunderbirdIconLarge(context, size),
               SizedBox(height: size.height * 0.1),
               SizedBox(
                 width: size.width * 0.8,

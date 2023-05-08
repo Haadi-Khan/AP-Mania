@@ -29,7 +29,7 @@ class VerifyPage extends AssassinStatelessWidget {
             ),
           ),
         ),
-      super.thunderbird_icon_large(context, size),
+        super.thunderbirdIconLarge(context, size),
       ],
     );
   }

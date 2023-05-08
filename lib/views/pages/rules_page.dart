@@ -448,7 +448,7 @@ class _RulesPageState extends AssassinState<RulesPage> {
                 ),
               ],
             )
-          : super.loading_menu(context),
+          : super.loadingMenu(context),
     );
   }
 

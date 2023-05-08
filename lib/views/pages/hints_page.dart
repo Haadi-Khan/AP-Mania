@@ -337,7 +337,7 @@ class _HintsPageState extends AssassinState<HintsPage> {
               ),
             ],
           )
-        : super.loading_menu(context);
+        : super.loadingMenu(context);
   }
 
   /// fetch hints from firebase, and display the data

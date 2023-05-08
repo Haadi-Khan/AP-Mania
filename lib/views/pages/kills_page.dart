@@ -484,7 +484,7 @@ class _KillsPageState extends AssassinState<KillsPage> {
               ),
             ],
           )
-        : super.loading_menu(context);
+        : super.loadingMenu(context);
   }
 
   loadKills() async {

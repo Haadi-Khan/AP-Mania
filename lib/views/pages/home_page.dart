@@ -72,7 +72,7 @@ class _HomePageState extends AssassinState<HomePage> {
                   targetName: targetName,
                   userSnapshot: userSnapshot,
                   usersSnapshot: usersSnapshot)
-          : super.loading_menu(context),
+          : super.loadingMenu(context),
     );
   }
 
@@ -95,7 +95,9 @@ class _HomePageState extends AssassinState<HomePage> {
     if (!admin) {
       usersRef.child('$id/alive').onValue.listen((DatabaseEvent event) {
         setState(() {
-          isAlive = event.snapshot.value.runtimeType==Null ? false : event.snapshot.value as bool;
+          isAlive = event.snapshot.value.runtimeType == Null
+              ? false
+              : event.snapshot.value as bool;
         });
       });
     }
@@ -251,12 +253,16 @@ class HomeViewUser extends AssassinStatelessWidget {
             height: size.height * 0.4,
             child: CachedNetworkImage(
               imageUrl: usersSnapshot
-                  .child(userSnapshot.child('target').value.toString())
-                  .child('photo_url')
-                  .value.runtimeType == Null ? '' :  usersSnapshot
-                  .child(userSnapshot.child('target').value.toString())
-                  .child('photo_url')
-                  .value as String,
+                          .child(userSnapshot.child('target').value.toString())
+                          .child('photo_url')
+                          .value
+                          .runtimeType ==
+                      Null
+                  ? ''
+                  : usersSnapshot
+                      .child(userSnapshot.child('target').value.toString())
+                      .child('photo_url')
+                      .value as String,
               placeholder: (context, url) => const Center(
                 child: CircularProgressIndicator(
                   color: kCyanColor,
@@ -323,7 +329,7 @@ class HomeViewUser extends AssassinStatelessWidget {
                   text: 'Wait for the game to begin', style: heading),
             ),
           ),
-          super.thunderbird_icon_large(context, size),
+          super.thunderbirdIconLarge(context, size),
         ],
       ),
     );
@@ -340,7 +346,7 @@ class HomeViewUser extends AssassinStatelessWidget {
                   text: 'You have been eliminated', style: heading),
             ),
           ),
-          super.thunderbird_icon_large(context, size),
+          super.thunderbirdIconLarge(context, size),
         ],
       ),
     );
@@ -357,7 +363,7 @@ class HomeViewUser extends AssassinStatelessWidget {
                   text: 'Congratulations you won!', style: heading),
             ),
           ),
-          super.thunderbird_icon_large(context, size),
+          super.thunderbirdIconLarge(context, size),
         ],
       ),
     );
@@ -591,7 +597,10 @@ AppBar homeBar(BuildContext context, State state) {
     actions: [
       PopupMenuButton<MenuAction>(
         color: kBlackColor,
-        icon: const Icon(Icons.more_horiz, color: kWhiteColor,),
+        icon: const Icon(
+          Icons.more_horiz,
+          color: kWhiteColor,
+        ),
         onSelected: (value) async {
           switch (value) {
             case MenuAction.logout:

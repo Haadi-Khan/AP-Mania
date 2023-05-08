@@ -12,7 +12,6 @@ import 'dart:developer' as devtools show log;
 
 import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
-/// Screen users sees when they're logging into their existing account
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
@@ -81,7 +80,15 @@ class _LoginViewState extends AssassinState<LoginView> {
                     width: size.width * 0.8,
                     child: errorMessage == null
                         ? null
-                        : super.errorIcon(errorMessage),
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const FaIcon(FontAwesomeIcons.circleExclamation,
+                                  color: kOrangeColor),
+                              Text(errorMessage ?? '',
+                                  style: const TextStyle(color: kOrangeColor)),
+                            ],
+                          ),
                   ),
                   SizedBox(
                     width: size.width * 0.8,

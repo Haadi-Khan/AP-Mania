@@ -12,7 +12,6 @@ import 'dart:developer' as devtools show log;
 
 import 'package:hse_assassin/wrapper/assassin_wrapper.dart';
 
-/// Screen the user sees when they're making a new account
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
 
@@ -64,7 +63,14 @@ class _RegisterViewState extends AssassinState<RegisterView> {
                     width: size.width * 0.8,
                     child: errorMessage == null
                         ? null
-                        : super.errorIcon(errorMessage),
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const FaIcon(FontAwesomeIcons.circleExclamation,
+                                  color: kOrangeColor),
+                              Text(errorMessage ?? '', style: generalText),
+                            ],
+                          ),
                   ),
                   SizedBox(
                     width: size.width * 0.8,

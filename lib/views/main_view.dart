@@ -31,14 +31,6 @@ class _MainViewState extends AssassinState<MainView> {
   Pages page = Pages.home;
   late final StreamSubscription _verifiedSubscription;
 
-  Map<IconData, Pages> iconMap = {
-    FontAwesomeIcons.book: Pages.rules,
-    FontAwesomeIcons.puzzlePiece: Pages.hints,
-    FontAwesomeIcons.house: Pages.home,
-    FontAwesomeIcons.userGroup: Pages.people,
-    FontAwesomeIcons.skull: Pages.kills
-  };
-
   @override
   void initState() {
     loadVerified();
@@ -68,7 +60,69 @@ class _MainViewState extends AssassinState<MainView> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: getIcons(),
+          children: [
+            IconButton(
+              color: kBlackColor,
+              enableFeedback: false,
+              onPressed: () {
+                setState(() {
+                  page = Pages.rules;
+                });
+              },
+              icon: page == Pages.rules
+                  ? const FaIcon(FontAwesomeIcons.book, color: kRedColor)
+                  : const FaIcon(FontAwesomeIcons.book, color: kGreyColor),
+            ),
+            IconButton(
+              color: kBlackColor,
+              enableFeedback: false,
+              onPressed: () {
+                setState(() {
+                  page = Pages.hints;
+                });
+              },
+              icon: page == Pages.hints
+                  ? const FaIcon(FontAwesomeIcons.puzzlePiece, color: kRedColor)
+                  : const FaIcon(FontAwesomeIcons.puzzlePiece,
+                      color: kGreyColor),
+            ),
+            IconButton(
+              color: kBlackColor,
+              enableFeedback: false,
+              onPressed: () {
+                setState(() {
+                  page = Pages.home;
+                });
+              },
+              icon: page == Pages.home
+                  ? const FaIcon(FontAwesomeIcons.house, color: kRedColor)
+                  : const FaIcon(FontAwesomeIcons.house, color: kGreyColor),
+            ),
+            IconButton(
+              color: kBlackColor,
+              enableFeedback: false,
+              onPressed: () {
+                setState(() {
+                  page = Pages.people;
+                });
+              },
+              icon: page == Pages.people
+                  ? const FaIcon(FontAwesomeIcons.userGroup, color: kRedColor)
+                  : const FaIcon(FontAwesomeIcons.userGroup, color: kGreyColor),
+            ),
+            IconButton(
+              color: kBlackColor,
+              enableFeedback: false,
+              onPressed: () {
+                setState(() {
+                  page = Pages.kills;
+                });
+              },
+              icon: page == Pages.kills
+                  ? const FaIcon(FontAwesomeIcons.skull, color: kRedColor)
+                  : const FaIcon(FontAwesomeIcons.skull, color: kGreyColor),
+            ),
+          ],
         ),
       ),
     );
@@ -84,33 +138,9 @@ class _MainViewState extends AssassinState<MainView> {
         FirebaseDatabase.instance.ref('games/$game/users/$id/verified');
     _verifiedSubscription = verifiedRef.onValue.listen((DatabaseEvent event) {
       setState(() {
-        verified = event.snapshot.value.runtimeType == Null
-            ? false
-            : event.snapshot.value as bool;
+        verified = event.snapshot.value.runtimeType == Null ? false : event.snapshot.value as bool;
       });
     });
-  }
-
-  // generates the icons for the bottom bar
-  List<Widget> getIcons() {
-    List<Widget> icons = [];
-    iconMap.forEach((key, value) {
-      icons.add(
-        IconButton(
-          color: kBlackColor,
-          enableFeedback: false,
-          onPressed: () {
-            setState(() {
-              page = value;
-            });
-          },
-          icon: page == value
-              ? FaIcon(key, color: kRedColor)
-              : FaIcon(key, color: kGreyColor),
-        ),
-      );
-    });
-    return icons;
   }
 }
 
@@ -130,7 +160,7 @@ AppBar getAppBar(Pages page, BuildContext context, State state) {
   }
 }
 
-/// Sends the user to the correct page
+/// 
 Widget getPage(Pages page, bool verified) {
   if (verified) {
     switch (page) {

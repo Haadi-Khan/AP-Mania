@@ -132,12 +132,7 @@ class _InfoViewState extends AssassinState<InfoView> {
             ),
             SizedBox(height: size.height * 0.01),
             imagePreview(size),
-            SizedBox(
-              height: size.height * 0.05,
-              width: size.width * 0.8,
-              child:
-                  errorMessage == null ? null : super.errorIcon(errorMessage),
-            ),
+            errorIcon(size),
             submissionButton(size, context),
           ],
         ),
@@ -265,6 +260,24 @@ class _InfoViewState extends AssassinState<InfoView> {
           : Image.file(
               image!,
               fit: BoxFit.contain,
+            ),
+    );
+  }
+
+  SizedBox errorIcon(Size size) {
+    return SizedBox(
+      height: size.height * 0.05,
+      width: size.width * 0.8,
+      child: errorMessage == null
+          ? null
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const FaIcon(FontAwesomeIcons.circleExclamation,
+                    color: kOrangeColor),
+                Text(errorMessage ?? '',
+                    style: const TextStyle(color: kOrangeColor)),
+              ],
             ),
     );
   }

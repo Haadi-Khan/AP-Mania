@@ -10,6 +10,5 @@ NEW FEATURES:
 
 TODO:
 
-- Secure Firebase
 - Improve code quality
 - Add unit testing?

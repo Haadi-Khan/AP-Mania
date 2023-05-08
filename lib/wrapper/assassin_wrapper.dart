@@ -13,7 +13,11 @@ abstract class AssassinState<T extends StatefulWidget> extends State {
     );
   }
 
+<<<<<<< HEAD
   Widget thunderbirdIconLarge(BuildContext context, size) {
+=======
+  Widget thunderbird_icon_large(BuildContext context, size) {
+>>>>>>> d8a221d157e4e22ffaab6c3dced52610a731cd25
     return SizedBox(
       height: size.height * 0.4,
       child: Image.asset('assets/images/thunderbird.png'),
@@ -47,7 +51,10 @@ abstract class AssassinState<T extends StatefulWidget> extends State {
       ),
     );
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> d8a221d157e4e22ffaab6c3dced52610a731cd25
   Widget errorIcon(String? errorMessage) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -69,7 +76,11 @@ abstract class AssassinStatelessWidget extends StatelessWidget {
     );
   }
 
+<<<<<<< HEAD
   Widget thunderbirdIconLarge(BuildContext context, size) {
+=======
+  Widget thunderbird_icon_large(BuildContext context, size) {
+>>>>>>> d8a221d157e4e22ffaab6c3dced52610a731cd25
     return SizedBox(
       height: size.height * 0.4,
       child: Image.asset('assets/images/thunderbird.png'),

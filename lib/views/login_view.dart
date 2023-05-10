@@ -75,21 +75,7 @@ class _LoginViewState extends AssassinState<LoginView> {
                       color: kDarkGreyColor,
                     ),
                   ),
-                  SizedBox(
-                    height: size.height * 0.05,
-                    width: size.width * 0.8,
-                    child: errorMessage == null
-                        ? null
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const FaIcon(FontAwesomeIcons.circleExclamation,
-                                  color: kOrangeColor),
-                              Text(errorMessage ?? '',
-                                  style: const TextStyle(color: kOrangeColor)),
-                            ],
-                          ),
-                  ),
+                  super.errorIcon(size, errorMessage),
                   SizedBox(
                     width: size.width * 0.8,
                     child: TextField(

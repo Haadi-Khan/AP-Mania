@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -110,7 +111,7 @@ class _EditViewState extends AssassinState<EditView> {
             ),
             SizedBox(height: size.height * 0.01),
             imagePreview(size),
-            errorIcon(size),
+            errorIcon(size,errorMessage),
             submissionButton(size, context),
           ],
         ),
@@ -284,24 +285,6 @@ class _EditViewState extends AssassinState<EditView> {
           : Image.file(
               image!,
               fit: BoxFit.contain,
-            ),
-    );
-  }
-
-  SizedBox errorIcon(Size size) {
-    return SizedBox(
-      height: size.height * 0.05,
-      width: size.width * 0.8,
-      child: errorMessage == null
-          ? null
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const FaIcon(FontAwesomeIcons.circleExclamation,
-                    color: kOrangeColor),
-                Text(errorMessage ?? '',
-                    style: const TextStyle(color: kOrangeColor)),
-              ],
             ),
     );
   }

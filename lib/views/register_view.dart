@@ -58,20 +58,7 @@ class _RegisterViewState extends AssassinState<RegisterView> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   super.thunderbirdIcon(context, size),
-                  SizedBox(
-                    height: size.height * 0.05,
-                    width: size.width * 0.8,
-                    child: errorMessage == null
-                        ? null
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const FaIcon(FontAwesomeIcons.circleExclamation,
-                                  color: kOrangeColor),
-                              Text(errorMessage ?? '', style: generalText),
-                            ],
-                          ),
-                  ),
+                  super.errorIcon(size, errorMessage),
                   SizedBox(
                     width: size.width * 0.8,
                     child: TextField(

@@ -80,21 +80,7 @@ class _GameChoiceViewState extends AssassinState<GameChoiceView> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: size.height * 0.05,
-                    width: size.width * 0.8,
-                    child: errorMessage == null
-                        ? null
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const FaIcon(FontAwesomeIcons.circleExclamation,
-                                  color: kOrangeColor),
-                              Text(errorMessage ?? '',
-                                  style: const TextStyle(color: kOrangeColor)),
-                            ],
-                          ),
-                  ),
+                  super.errorIcon(size, errorMessage),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -320,9 +306,16 @@ class _GameChoiceViewState extends AssassinState<GameChoiceView> {
     final userRef = FirebaseDatabase.instance.ref('games');
     final event = await userRef.once();
     final gameSnapshot = event.snapshot;
+    final now = DateTime.now();
     List<String> games = [];
     for (DataSnapshot element in gameSnapshot.children) {
-      if (element.child('started').value != true) {
+      int finalRound = element.child('rounds').children.length - 1;
+      String roundEnd = element
+          .child('rounds')
+          .child('$finalRound')
+          .child('time')
+          .value as String;
+      if (now.isBefore(DateTime.parse(roundEnd))) {
         games.add(element.key.toString());
       }
     }

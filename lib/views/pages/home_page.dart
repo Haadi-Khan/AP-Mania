@@ -92,6 +92,7 @@ class _HomePageState extends AssassinState<HomePage> {
       adminMode = admin && verified;
     });
 
+    // Display user's target for the round if they're alive
     if (!admin) {
       usersRef.child('$id/alive').onValue.listen((DatabaseEvent event) {
         setState(() {
@@ -101,67 +102,15 @@ class _HomePageState extends AssassinState<HomePage> {
         });
       });
     }
+
+    // Setting the targets for the round
     datesRef = FirebaseDatabase.instance.ref('games/$game/rounds');
     if (!mounted) return;
-    _testSubscription = datesRef.onValue.listen((DatabaseEvent event) {
-      final data = event.snapshot.children;
-      List<DataSnapshot> datesRefs = [];
-      DateTime? nextRoundTemp;
-      for (DataSnapshot dateRef in data) {
-        datesRefs.add(dateRef);
-      }
-      datesRefs.sort((a, b) {
-        String timeA = a.child('time').value as String;
-        String timeB = b.child('time').value as String;
-        return timeA.compareTo(timeB);
-      });
-      setState(() {
-        dates = datesRefs;
-      });
-
-      for (DataSnapshot date in dates) {
-        nextRoundTemp = DateTime.parse(date.child('time').value as String);
-        if (now.isBefore(nextRoundTemp)) {
-          setState(() {
-            nextRound = nextRoundTemp;
-            roundNumber = dates.indexOf(date);
-          });
-          bool started = roundNumber == 0 ||
-              dates[roundNumber - 1].child('started').value as bool;
-          if (!started) {
-            List uuids = [];
-            for (DataSnapshot user in usersSnapshot.children) {
-              if (user.child('killed_this_round').value == false) {
-                usersRef.child(user.key!).update({'alive': false});
-              } else if (user.child('alive').value == true) {
-                uuids.add(user.key);
-              }
-            }
-            List permutation = [];
-            for (int i = 0; i < uuids.length; i++) {
-              permutation.add(i);
-            }
-            while (getMinCycleLength(permutation) <
-                min(uuids.length, max(3, uuids.length / 20))) {
-              permutation.shuffle();
-            }
-            for (int i = 0; i < uuids.length; i++) {
-              usersRef
-                  .child(uuids[i])
-                  .update({'target': uuids[permutation[i]]});
-            }
-            datesRef
-                .child(dates[roundNumber - 1].key!)
-                .update({'started': true});
-            FirebaseDatabase.instance.ref('games/$game/started').set(true);
-            for (DataSnapshot user in usersSnapshot.children) {
-              usersRef.child(user.key!).update({'killed_this_round': false});
-            }
-          }
-          break;
-        }
-      }
-    });
+    _testSubscription = datesRef.onValue.listen(
+      (event) {
+        setRoundTargets(event, usersRef, game);
+      },
+    );
     targetName = usersSnapshot
         .child(userSnapshot.child('target').value.toString())
         .child('name')
@@ -170,6 +119,69 @@ class _HomePageState extends AssassinState<HomePage> {
     setState(() {
       loaded = true;
     });
+  }
+
+  setRoundTargets(DatabaseEvent event, DatabaseReference usersRef, game) {
+    final data = event.snapshot.children;
+    List<DataSnapshot> datesRefs = [];
+    DateTime? nextRoundTemp;
+    for (DataSnapshot dateRef in data) {
+      datesRefs.add(dateRef);
+    }
+    datesRefs.sort((a, b) {
+      String timeA = a.child('time').value as String;
+      String timeB = b.child('time').value as String;
+      return timeA.compareTo(timeB);
+    });
+    setState(() {
+      dates = datesRefs;
+    });
+
+    // Setting the targets for the round
+    for (DataSnapshot date in dates) {
+      nextRoundTemp = DateTime.parse(date.child('time').value as String);
+      if (now.isBefore(nextRoundTemp)) {
+        setState(() {
+          nextRound = nextRoundTemp;
+          roundNumber = dates.indexOf(date);
+        });
+
+        // If it's the first round or if there was a previous round from the current
+        bool started = roundNumber == 0 ||
+            dates[roundNumber - 1].child('started').value as bool;
+
+        if (!started) {
+          List uuids = [];
+          for (DataSnapshot user in usersSnapshot.children) {
+            if (user.child('killed_this_round').value == false) {
+              usersRef.child(user.key!).update({'alive': false});
+            } else if (user.child('alive').value == true) {
+              uuids.add(user.key);
+            }
+          }
+          List permutation = [];
+          for (int i = 0; i < uuids.length; i++) {
+            permutation.add(i);
+          }
+          while (getMinCycleLength(permutation) <
+              min(uuids.length, max(3, uuids.length / 20))) {
+            permutation.shuffle();
+          }
+          for (int i = 0; i < uuids.length; i++) {
+            usersRef.child(uuids[i]).update({'target': uuids[permutation[i]]});
+          }
+
+          datesRef.child(dates[roundNumber - 1].key!).update({'started': true});
+          FirebaseDatabase.instance.ref('games/$game/started').set(true);
+
+          for (DataSnapshot user in usersSnapshot.children) {
+            usersRef.child(user.key!).update({'killed_this_round': false});
+          }
+
+        }
+        break;
+      }
+    }
   }
 }
 
@@ -213,22 +225,22 @@ class HomeViewUser extends AssassinStatelessWidget {
                 ? SizedBox(
                     // Game has ended
                     child: isAlive
-                        ? win_view(context, size)
-                        : lose_view(context, size),
+                        ? winView(context, size)
+                        : loseView(context, size),
                   )
                 : roundNumber == 0
-                    ? waiting_view(context, size)
+                    ? waitingView(context, size)
                     : isAlive
-                        ? assassin_view()
-                        : lose_view(context, size),
+                        ? assassinView()
+                        : loseView(context, size),
           ),
         ),
-        time_remaining()
+        timeRemaining()
       ],
     );
   }
 
-  Align assassin_view() {
+  Align assassinView() {
     return Align(
       // Player is alive
       alignment: Alignment.center,
@@ -275,7 +287,7 @@ class HomeViewUser extends AssassinStatelessWidget {
     );
   }
 
-  StreamBuilder<int> time_remaining() {
+  StreamBuilder<int> timeRemaining() {
     return StreamBuilder(
       stream: Stream.periodic(const Duration(seconds: 1), (i) => i),
       builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
@@ -318,7 +330,7 @@ class HomeViewUser extends AssassinStatelessWidget {
     );
   }
 
-  SizedBox waiting_view(BuildContext context, Size size) {
+  SizedBox waitingView(BuildContext context, Size size) {
     return SizedBox(
       // Player is dead,
       child: Column(
@@ -335,7 +347,7 @@ class HomeViewUser extends AssassinStatelessWidget {
     );
   }
 
-  SizedBox lose_view(context, size) {
+  SizedBox loseView(context, size) {
     return SizedBox(
       // Player is dead,
       child: Column(
@@ -352,7 +364,7 @@ class HomeViewUser extends AssassinStatelessWidget {
     );
   }
 
-  SizedBox win_view(context, size) {
+  SizedBox winView(context, size) {
     return SizedBox(
       // Player is alive
       child: Column(
@@ -547,6 +559,7 @@ class HomeViewAdmin extends AssassinStatelessWidget {
   }
 }
 
+/// 
 int getMinCycleLength(List perms) {
   List<int> cycles = [];
   for (int i = 0; i < perms.length; i++) {

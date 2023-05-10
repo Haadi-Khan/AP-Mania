@@ -81,17 +81,11 @@ class _EditViewState extends AssassinState<EditView> {
                 ],
               ),
             ),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
+            SizedBox(height: size.height * 0.01),
             nameInput(size, border),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
+            SizedBox(height: size.height * 0.01),
             phoneInput(size, border),
-            SizedBox(
-              height: size.height * 0.01,
-            ),
+            SizedBox(height: size.height * 0.01),
             SizedBox(
               height: size.height * 0.01,
             ),
@@ -111,7 +105,7 @@ class _EditViewState extends AssassinState<EditView> {
             ),
             SizedBox(height: size.height * 0.01),
             imagePreview(size),
-            errorIcon(size,errorMessage),
+            errorIcon(size, errorMessage),
             submissionButton(size, context),
           ],
         ),
@@ -148,7 +142,14 @@ class _EditViewState extends AssassinState<EditView> {
               style: generalText,
               autocorrect: false,
               keyboardAppearance: Brightness.dark,
-              onChanged: (value) => {},
+              onChanged: (value) => {
+                // update the name in the database
+                FirebaseDatabase.instance
+                    .ref()
+                    .child('users')
+                    .child(FirebaseAuth.instance.currentUser!.uid)
+                    .update({'name': value})
+              },
             );
           }),
     );
@@ -168,21 +169,29 @@ class _EditViewState extends AssassinState<EditView> {
               _phoneNumber.text = phone;
             }
             return TextField(
-                controller: _phoneNumber,
-                decoration: InputDecoration(
-                  hintStyle: hintText,
-                  hintText: textHintPhoneNumber,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 15.0,
-                    horizontal: 10.0,
-                  ),
-                  enabledBorder: border,
-                  focusedBorder: border,
+              controller: _phoneNumber,
+              decoration: InputDecoration(
+                hintStyle: hintText,
+                hintText: textHintPhoneNumber,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 15.0,
+                  horizontal: 10.0,
                 ),
-                autocorrect: false,
-                style: generalText,
-                keyboardType: TextInputType.number,
-                keyboardAppearance: Brightness.dark);
+                enabledBorder: border,
+                focusedBorder: border,
+              ),
+              autocorrect: false,
+              style: generalText,
+              keyboardType: TextInputType.number,
+              keyboardAppearance: Brightness.dark,
+              onChanged: (value) => {
+                FirebaseDatabase.instance
+                    .ref()
+                    .child('users')
+                    .child(FirebaseAuth.instance.currentUser!.uid)
+                    .update({'phone': value})
+              },
+            );
           }),
     );
   }
@@ -277,15 +286,29 @@ class _EditViewState extends AssassinState<EditView> {
   }
 
   SizedBox imagePreview(Size size) {
+    // get the current user's image from the database
     return SizedBox(
       height: size.height * 0.3,
       width: size.width * 0.8,
-      child: image == null
-          ? null
-          : Image.file(
-              image!,
-              fit: BoxFit.contain,
-            ),
+      child: FutureBuilder(
+          future: FirebaseDatabase.instance.ref().child('users').get(),
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              DataSnapshot values = snapshot.data as DataSnapshot;
+              final user = FirebaseAuth.instance.currentUser!;
+              String imageURL =
+                  values.child(user.uid).child('photo_url').value as String;
+
+              // String imageURL = 'https://firebasestorage.googleapis.com/v0/b/foodernity-2d0f7.appspot.com/o/default%2Fdefault_profile.png?alt=media&token=3b2b0b7a-9b0a-4b0e-8b0a-5b0a4b0e9b0a';
+
+              devtools.log(imageURL);
+
+              return imageURL == ''
+                  ? Container()
+                  : Image.network(imageURL, fit: BoxFit.contain);
+            }
+            return Container();
+          }),
     );
   }
 
@@ -314,7 +337,6 @@ class _EditViewState extends AssassinState<EditView> {
             final databaseRef = FirebaseDatabase.instance.ref();
             final usersRef = databaseRef.child('users');
             final userRef = usersRef.child(user.uid);
-            print(fullName);
             await userRef.update({
               "name": fullName,
               "phone": phoneNumber,

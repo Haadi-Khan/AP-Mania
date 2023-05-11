@@ -177,7 +177,6 @@ class _HomePageState extends AssassinState<HomePage> {
           for (DataSnapshot user in usersSnapshot.children) {
             usersRef.child(user.key!).update({'killed_this_round': false});
           }
-
         }
         break;
       }
@@ -559,7 +558,7 @@ class HomeViewAdmin extends AssassinStatelessWidget {
   }
 }
 
-/// 
+///
 int getMinCycleLength(List perms) {
   List<int> cycles = [];
   for (int i = 0; i < perms.length; i++) {
@@ -645,9 +644,8 @@ AppBar homeBar(BuildContext context, State state) {
                 final gameRef =
                     FirebaseDatabase.instance.ref('games/$game/users/');
 
-                await userRef.update({
-                  "has_chosen_game": false,
-                });
+//c7oypwdd6GbPHvPO8VJenp3W7az1
+                await userRef.update({"has_chosen_game": false});
                 await userRef.child('game').remove();
                 await gameRef.child(id).remove();
 

@@ -135,6 +135,14 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
                                     ),
                                     Positioned(
                                       bottom: 0,
+                                      right: 50,
+                                      child: Visibility(
+                                        visible: adminMode,
+                                        child: kickButton(context, index),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 0,
                                       right: 0,
                                       child: Visibility(
                                         visible: adminMode,
@@ -168,6 +176,56 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
         : super.loadingMenu(context);
   }
 
+  CupertinoButton kickButton(BuildContext context, int index) {
+    return CupertinoButton(
+      padding: const EdgeInsets.all(5),
+      child: const FaIcon(
+        FontAwesomeIcons.userMinus,
+        size: 20,
+        color: kWhiteColor,
+      ),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        usersRef.child(showPeople[index].key!).update({'verified': true});
+        final shouldLeave = await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              backgroundColor: kBlackColor,
+              title: const Text("Kick User?", style: heading),
+              content: const Text("$textLogoutCheck kick this user?",
+                  style: generalText),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: const Text(textCancel, style: redOptionText),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text("Kick User", style: redOptionText),
+                )
+              ],
+            );
+          },
+        ).then(((value) => value ?? false));
+        if (shouldLeave) {
+          String id = showPeople[index].key!;
+          final userRef = FirebaseDatabase.instance.ref('users/$id');
+          final game =
+              await userRef.child('game').get().then((value) => value.value);
+          final gameRef = FirebaseDatabase.instance.ref('games/$game/users/');
+          await userRef.update({"has_chosen_game": false});
+          await userRef.child('game').remove();
+          await gameRef.child(id).remove();
+        }
+      },
+    );
+  }
+
   /// Button to verify a player
   CupertinoButton adminVerifyButton(BuildContext context, int index) {
     return CupertinoButton(
@@ -189,7 +247,7 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
     return CupertinoButton(
       padding: const EdgeInsets.all(5),
       child: const FaIcon(
-        FontAwesomeIcons.circleChevronUp,
+        FontAwesomeIcons.crown,
         size: 20,
         color: kWhiteColor,
       ),
@@ -209,7 +267,7 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
     return CupertinoButton(
       padding: const EdgeInsets.all(5),
       child: const FaIcon(
-        FontAwesomeIcons.circleChevronDown,
+        FontAwesomeIcons.user,
         size: 20,
         color: kWhiteColor,
       ),
@@ -554,7 +612,9 @@ class _PeoplePageState extends AssassinState<PeoplePage> {
       final data = event.snapshot.children;
       List<DataSnapshot> peopleRefs = [];
       for (DataSnapshot user in data) {
-        peopleRefs.add(user);
+        if (user.exists) {
+          peopleRefs.add(user);
+        }
       }
       setState(() {
         people = peopleRefs;

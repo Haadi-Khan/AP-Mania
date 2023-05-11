@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -319,39 +318,54 @@ class _EditViewState extends AssassinState<EditView> {
         onPressed: () async {
           final fullName = _fullName.text;
           final phoneNumber = _phoneNumber.text;
-          if (image == null || fullName == '' || phoneNumber == '') {
-            setState(() {
-              errorMessage = textErrorMissingFields;
-              devtools.log(errorMessage!);
-            });
-          } else if (phoneNumber.length < 10) {
+
+          int width = 0;
+          int height = 0;
+          if (image != null) {
+            final decodedImage =
+                await decodeImageFromList(image!.readAsBytesSync());
+            width = decodedImage.width;
+            height = decodedImage.height;
+          }
+
+          if (phoneNumber.length < 10) {
             setState(() {
               errorMessage = '  Invalid phone number';
               devtools.log(errorMessage!);
             });
+          } else if (width != height) {
+            setState(() {
+              errorMessage = '  Reupload + Crop image to square';
+              devtools.log(errorMessage!);
+            });
           } else {
             final user = FirebaseAuth.instance.currentUser!;
-
-            final imageURL = await uploadFileToGoogleDrive(image!);
-
             final databaseRef = FirebaseDatabase.instance.ref();
             final usersRef = databaseRef.child('users');
             final userRef = usersRef.child(user.uid);
-            await userRef.update({
-              "name": fullName,
-              "phone": phoneNumber,
-              "photo_url": imageURL,
-            });
 
-            // sync the user's info in 'user's and the user's profile in their current game
             final game =
                 await userRef.child('game').get().then((value) => value.value);
             final gameRef =
                 FirebaseDatabase.instance.ref('games/$game/users/${user.uid}');
+
+            if (image != null) {
+              final imageURL = await uploadFileToGoogleDrive(image!);
+              userRef.update({
+                "photo_url": imageURL,
+              });
+              await gameRef.update({
+                "photo_url": imageURL,
+              });
+            }
+
+            await userRef.update({
+              "name": fullName,
+              "phone": phoneNumber,
+            });
             await gameRef.update({
               "name": fullName,
               "phone": phoneNumber,
-              "photo_url": imageURL,
             });
 
             if (!mounted) return;

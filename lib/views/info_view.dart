@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -132,7 +133,7 @@ class _InfoViewState extends AssassinState<InfoView> {
             ),
             SizedBox(height: size.height * 0.01),
             imagePreview(size),
-            errorIcon(size,errorMessage),
+            errorIcon(size, errorMessage),
             submissionButton(size, context),
           ],
         ),
@@ -271,6 +272,12 @@ class _InfoViewState extends AssassinState<InfoView> {
         onPressed: () async {
           final fullName = _fullName.text;
           final phoneNumber = _phoneNumber.text;
+
+          final decodedImage =
+              await decodeImageFromList(image!.readAsBytesSync());
+          final width = decodedImage.width;
+          final height = decodedImage.height;
+
           if (image == null || fullName == '' || phoneNumber == '') {
             setState(() {
               errorMessage = textErrorMissingFields;
@@ -279,6 +286,11 @@ class _InfoViewState extends AssassinState<InfoView> {
           } else if (phoneNumber.length < 10) {
             setState(() {
               errorMessage = '  Invalid phone number';
+              devtools.log(errorMessage!);
+            });
+          } else if (width != height) {
+            setState(() {
+              errorMessage = '  Reupload + Crop image to square';
               devtools.log(errorMessage!);
             });
           } else {

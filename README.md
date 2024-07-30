@@ -1,6 +1,5 @@
-# AP Assassin
+# AP Mania
 
-Hi Salk I love you
 
 NEW FEATURES:
 
